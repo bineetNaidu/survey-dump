@@ -2,7 +2,7 @@ import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   return (
     <>
       <Head>
@@ -10,7 +10,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         <meta name="description" content="Dump your survey questions" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Component {...pageProps} />
+      <div className="bg-black min-h-screen h-full text-white">
+        <Component {...pageProps} />
+      </div>
     </>
   );
 }
