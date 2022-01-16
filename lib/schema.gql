@@ -1,0 +1,44 @@
+type User {
+  id: ID!
+  username: String!
+  email: String!
+  password: String!
+  createdAt: Date!
+  surveys: [Survey]
+}
+
+type Option {
+  id: ID!
+  name: String!
+  other: String
+  createdAt: Date!
+  questionId: Question!
+}
+
+type Question {
+  id: ID!
+  title: String!
+  isOption: Boolean!
+  isField: Boolean!
+  options: [Option]
+  fieldPlaceholder: String
+  createdAt: Date!
+  surveyId: Survey!
+}
+
+type Survey {
+  id: ID!
+  slug: String!
+  title: String!
+  description: String!
+  createdAt: Date!
+  questions: [Question!]!
+  creator: User!
+}
+
+type Query {
+  surveys: [Survey!]!
+  survey(id: ID!): Survey!
+  user(id: ID!): User!
+  users: [User!]!
+}
