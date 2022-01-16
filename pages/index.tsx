@@ -1,4 +1,5 @@
 import type { NextPage } from 'next';
+import { withApollo } from '../lib/nextApollo';
 
 const Home: NextPage = () => {
   return (
@@ -9,4 +10,4 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default withApollo()(Home);
