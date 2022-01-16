@@ -1,5 +1,4 @@
 type User {
-  id: ID!
   username: String!
   email: String!
   password: String!
@@ -8,7 +7,6 @@ type User {
 }
 
 type Option {
-  id: ID!
   name: String!
   other: String
   createdAt: Date!
@@ -16,7 +14,6 @@ type Option {
 }
 
 type Question {
-  id: ID!
   title: String!
   isOption: Boolean!
   isField: Boolean!
@@ -27,18 +24,10 @@ type Question {
 }
 
 type Survey {
-  id: ID!
   slug: String!
   title: String!
   description: String!
   createdAt: Date!
   questions: [Question!]!
   creator: User!
-}
-
-type Query {
-  surveys: [Survey!]!
-  survey(id: ID!): Survey!
-  user(id: ID!): User!
-  users: [User!]!
 }
