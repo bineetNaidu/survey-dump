@@ -1,8 +1,9 @@
 type User {
   username: String!
   email: String!
-  password: String!
+  avatar: String!
   createdAt: Date!
+  googleId: ID!
   surveys: [Survey]
 }
 
@@ -30,4 +31,9 @@ type Survey {
   createdAt: Date!
   questions: [Question!]!
   creator: User!
+}
+
+type Query {
+  getSurvey(slug: String!): Survey
+  login(googleId: ID!): User
 }
