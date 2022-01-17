@@ -1,216 +1,145 @@
-export const CREATE_USER = (
-  username: string,
-  avatar: string,
-  email: string,
-  createdAt: Date,
-  password?: string,
-  googleId?: string
-) => {
-  return `
-	mutation {
-  createUser(
-    data: {
-			googleId: "${googleId ?? null}",
-			password: "${password ?? null}",
-      username: ${username}
-      email: ${email}
-      avatar: ${avatar}
-      surveys: []
-      createdAt: ${createdAt}
-    }
-  ) {
-    _id
-    email
-		avatar
-    username
-    createdAt
-    surveys {
+import { gql } from '@apollo/client';
+
+export const CREATE_USER = gql`
+  mutation CreateUser($data: UserInput!) {
+    createUser(data: $data) {
       _id
+      email
+      avatar
+      username
+      createdAt
+      surveys {
+        _id
+      }
     }
   }
-}
-	`;
-};
+`;
 
-export const LOGIN_WITH_GOOGLE = (googleId: string) => {
-  return `
-	query {
-  loginWithGoogle(googleId: ${googleId}){
-    _id
-    email
-		avatar
-    username
-    createdAt
-    surveys {
+export const LOGIN_WITH_GOOGLE = gql`
+  query LoginWithGoogle($googleId: String!) {
+    loginWithGoogle(googleId: $googleId) {
       _id
+      email
+      avatar
+      username
+      createdAt
+      surveys {
+        _id
+      }
     }
   }
-}
-	`;
-};
+`;
 
-export const LOGIN_WITH_CREDENTIALS = (username: string, password: string) => {
-  return `
-	query {
-	loginWithCredentials(username: ${username}, password: ${password}){
-    _id
-    email
-		avatar
-    username
-    createdAt
-    surveys {
+export const LOGIN_WITH_CREDENTIALS = gql`
+  query LoginWithCredentials($username: String!, $password: String!) {
+    loginWithCredentials(username: $username, password: $password) {
       _id
+      email
+      avatar
+      username
+      createdAt
+      surveys {
+        _id
+      }
     }
   }
-}
-	`;
-};
+`;
 
-export const GET_SURVEY = (slug: string) => {
-  return `
-	query {
-  getSurvey(slug: ${slug}) {
-    description
-    _id
-    slug
-    questions {
+export const GET_SURVEY = gql`
+  query GetSurvey($surveyId: ID!) {
+    getSurvey(slug: $slug) {
+      description
+      _id
+      slug
+      questions {
+        _id
+        isOption
+        isField
+        options {
+          _id
+          name
+          createdAt
+          other
+        }
+        createdAt
+        title
+        fieldPlaceholder
+      }
+      creator {
+        _id
+        avatar
+        username
+      }
+      createdAt
+      title
+    }
+  }
+`;
+
+export const CREATE_SURVEY = gql`
+  mutation CreateSurvey($data: SurveyInput!) {
+    createSurvey(data: $data) {
+      _id
+      slug
+      questions {
+        _id
+      }
+      creator
+      createdAt
+      title
+    }
+  }
+`;
+
+export const CREATE_QUESTION = gql`
+  mutation CreateQuestion($data: QuestionInput!) {
+    createQuestion(data: $data) {
       _id
       isOption
+      surveyId
       isField
       options {
         _id
-        name
-        createdAt
-        other
       }
       createdAt
       title
       fieldPlaceholder
     }
-    creator {
-      _id
-      avatar
-      username
-    }
-    createdAt
-    title
   }
-}`;
-};
+`;
 
-export const CREATE_SURVEY = (
-  slug: string,
-  title: string,
-  description: string,
-  creator: string,
-  createdAt: Date,
-  questions: string[]
-) => {
-  return `
-	mutation {
-  createSurvey(data: {
-    slug: ${slug}
-    title:${title}    
-		description: ${description}
-    questions: ${questions}
-    creator: ${creator}
-    createdAt: ${createdAt}
-  }) {
-    _id
-    slug
-    questions {
+export const CREATE_OPTION = gql`
+  mutation CreateOption($data: OptionInput!) {
+    createOption(data: $data) {
+      questionId
+      name
+      _id
+      createdAt
+      other
+    }
+  }
+`;
+
+export const DELETE_SURVEY = gql`
+  mutation DeleteSurvey($surveyId: ID!) {
+    deleteSurvey(id: $surveyId) {
       _id
     }
-    creator
-    createdAt
-    title
   }
-}`;
-};
+`;
 
-export const CREATE_QUESTION = (
-  title: string,
-  isOption: string,
-  isField: string,
-  createdAt: Date,
-  surveyId: string,
-  options?: string[],
-  fieldPlaceholder?: string
-) => {
-  return `
-	mutation {
-  createQuestion(data: {
-    title: ${title}
-    isOption: ${isOption}
-    isField: ${isField}
-    options: ${options ?? []}
-    fieldPlaceholder: ${fieldPlaceholder ?? null}
-    createdAt: ${createdAt}
-    surveyId: ${surveyId}
-  }) {
-    _id
-    isOption
-    surveyId
-    isField
-    options {
+export const DELETE_QUESTION = gql`
+  mutation DeleteQuestion($questionId: ID!) {
+    deleteQuestion(id: $questionId) {
       _id
     }
-    createdAt
-    title
-    fieldPlaceholder
   }
-}`;
-};
-
-export const CREATE_OPTION = (
-  name: string,
-  createdAt: string,
-  questionId: string,
-  other?: string
-) => {
-  return `
-	mutation {
-  createOption(data: {
-    name: ${name} 
-    other: ${other ?? null} 
-    createdAt: ${createdAt} 
-    questionId: ${questionId} 
-	}) {
-    questionId
-    name
-    _id
-    createdAt
-    other
-  }
-}
 `;
-};
 
-export const DELETE_SURVEY = (surveyId: string) => {
-  return `
-	mutation {
-  deleteSurvey(id: ${surveyId}) {
-    _id
+export const DELETE_OPTION = gql`
+  mutation DeleteOption($optionId: ID!) {
+    deleteOption(id: $optionId) {
+      _id
+    }
   }
-}`;
-};
-
-export const DELETE_QUESTION = (questionId: string) => {
-  return `
-	mutation {
-  deleteQuestion(id: ${questionId}) {
-    _id
-  }
-}
 `;
-};
-
-export const DELETE_OPTION = (optionId: string) => {
-  return `
-	mutation {
-	deleteOption(id: ${optionId}) {
-		_id
-	}
-}
-`;
-};
