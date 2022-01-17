@@ -1,12 +1,7 @@
 export type UserType = {
-  _id: string;
-  password?: string;
-  googleId?: string;
   email: string;
-  avatar: string;
-  username: string;
-  createdAt: Date | string;
-  surveys: [];
+  name: string;
+  image: string;
 };
 
 export type OptionType = {
@@ -31,11 +26,7 @@ export type SurveyType = {
   _id: string;
   slug: string;
   questions: QuestionType[];
-  creator: {
-    _id: Pick<UserType, '_id'>;
-    avatar: Pick<UserType, 'avatar'>;
-    username: Pick<UserType, 'username'>;
-  };
+  creator: Pick<UserType, 'email'>;
   createdAt: Date | string;
   title: string;
 };
