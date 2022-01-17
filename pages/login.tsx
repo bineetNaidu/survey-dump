@@ -5,14 +5,14 @@ import Link from 'next/link';
 import { GoogleAuthBtn } from '../components/GoogleAuthBtn';
 import { withApollo } from '../lib/nextApollo';
 import { useLazyQuery, gql } from '@apollo/client';
-import { LOGIN_WITH_CREDENTIALS } from '../lib/queries';
+// import { LOGIN_WITH_CREDENTIALS } from '../lib/queries';
 import type { UserType } from '../lib/types';
 import { userStore } from '../lib/stores/users.store';
 import { useToasts } from 'react-toast-notifications';
 import { useRouter } from 'next/router';
 
 const Login: NextPage = () => {
-  const [loginWithCredentials] = useLazyQuery(LOGIN_WITH_CREDENTIALS);
+  // const [loginWithCredentials] = useLazyQuery(LOGIN_WITH_CREDENTIALS);
   const { setUser } = userStore();
   const { addToast } = useToasts();
   const route = useRouter();
@@ -40,29 +40,29 @@ const Login: NextPage = () => {
               { setSubmitting, setErrors, setValues }
             ) => {
               setSubmitting(true);
-              const { data } = await loginWithCredentials({
-                variables: values,
-              });
+              // const { data } = await loginWithCredentials({
+              //   variables: values,
+              // });
 
-              const { loginWithCredentials: authUser } = data as {
-                loginWithCredentials: UserType | null;
-              };
+              // const { loginWithCredentials: authUser } = data as {
+              //   loginWithCredentials: UserType | null;
+              // };
 
-              if (authUser) {
-                setUser(authUser);
-                addToast('Logged in successfully', {
-                  appearance: 'success',
-                  autoDismiss: true,
-                  onDismiss: () => {
-                    route.push('/');
-                  },
-                });
-              } else {
-                addToast('Invalid username or password', {
-                  appearance: 'error',
-                  autoDismiss: true,
-                });
-              }
+              // if (authUser) {
+              //   setUser(authUser);
+              //   addToast('Logged in successfully', {
+              //     appearance: 'success',
+              //     autoDismiss: true,
+              //     onDismiss: () => {
+              //       route.push('/');
+              //     },
+              //   });
+              // } else {
+              //   addToast('Invalid username or password', {
+              //     appearance: 'error',
+              //     autoDismiss: true,
+              //   });
+              // }
 
               setSubmitting(false);
               setValues({

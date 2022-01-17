@@ -1,50 +1,5 @@
 import { gql } from '@apollo/client';
 
-export const CREATE_USER = gql`
-  mutation CreateUser($data: UserInput!) {
-    createUser(data: $data) {
-      _id
-      email
-      avatar
-      username
-      createdAt
-      surveys {
-        _id
-      }
-    }
-  }
-`;
-
-export const LOGIN_WITH_GOOGLE = gql`
-  query LoginWithGoogle($googleId: String!) {
-    loginWithGoogle(googleId: $googleId) {
-      _id
-      email
-      avatar
-      username
-      createdAt
-      surveys {
-        _id
-      }
-    }
-  }
-`;
-
-export const LOGIN_WITH_CREDENTIALS = gql`
-  query LoginWithCredentials($username: String!, $password: String!) {
-    loginWithCredentials(username: $username, password: $password) {
-      _id
-      email
-      avatar
-      username
-      createdAt
-      surveys {
-        _id
-      }
-    }
-  }
-`;
-
 export const GET_SURVEY = gql`
   query GetSurvey($surveyId: ID!) {
     getSurvey(slug: $slug) {
@@ -65,11 +20,7 @@ export const GET_SURVEY = gql`
         title
         fieldPlaceholder
       }
-      creator {
-        _id
-        avatar
-        username
-      }
+      creator
       createdAt
       title
     }
