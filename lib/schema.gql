@@ -2,8 +2,9 @@ type User {
   username: String!
   email: String!
   avatar: String!
+  password: String
   createdAt: Date!
-  googleId: ID!
+  googleId: ID
   surveys: [Survey]
 }
 
@@ -35,5 +36,6 @@ type Survey {
 
 type Query {
   getSurvey(slug: String!): Survey
-  login(googleId: ID!): User
+  loginWithGoogle(googleId: ID!): User
+  loginWithCredentials(username: String!, password: String!): User
 }

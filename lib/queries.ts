@@ -3,13 +3,15 @@ export const CREATE_USER = (
   avatar: string,
   email: string,
   createdAt: Date,
-  googleId: string
+  password?: string,
+  googleId?: string
 ) => {
   return `
 	mutation {
   createUser(
     data: {
-			googleId: "${googleId}",
+			googleId: "${googleId ?? null}",
+			password: "${password ?? null}",
       username: ${username}
       email: ${email}
       avatar: ${avatar}
@@ -30,10 +32,27 @@ export const CREATE_USER = (
 	`;
 };
 
-export const LOGIN = (googleId: string) => {
+export const LOGIN_WITH_GOOGLE = (googleId: string) => {
   return `
 	query {
-  login(googleId: ${googleId}){
+  loginWithGoogle(googleId: ${googleId}){
+    _id
+    email
+		avatar
+    username
+    createdAt
+    surveys {
+      _id
+    }
+  }
+}
+	`;
+};
+
+export const LOGIN_WITH_CREDENTIALS = (username: string, password: string) => {
+  return `
+	query {
+	loginWithCredentials(username: ${username}, password: ${password}){
     _id
     email
 		avatar
