@@ -3,8 +3,20 @@ import { Navbar } from '../components/Navbar';
 import { Formik, Form, ErrorMessage } from 'formik';
 import Link from 'next/link';
 import { GoogleAuthBtn } from '../components/GoogleAuthBtn';
+import { withApollo } from '../lib/nextApollo';
+import { useLazyQuery, gql } from '@apollo/client';
+import { LOGIN_WITH_CREDENTIALS } from '../lib/queries';
+import type { UserType } from '../lib/types';
+import { userStore } from '../lib/stores/users.store';
+import { useToasts } from 'react-toast-notifications';
+import { useRouter } from 'next/router';
 
 const Login: NextPage = () => {
+  const [loginWithCredentials] = useLazyQuery(LOGIN_WITH_CREDENTIALS);
+  const { setUser } = userStore();
+  const { addToast } = useToasts();
+  const route = useRouter();
+
   return (
     <>
       <Navbar />
@@ -25,16 +37,42 @@ const Login: NextPage = () => {
             }}
             onSubmit={async (
               values,
-              { setSubmitting, validateForm, setErrors }
+              { setSubmitting, setErrors, setValues }
             ) => {
-              const err = await validateForm(values);
-              if (err) setErrors(err);
+              setSubmitting(true);
+              const { data } = await loginWithCredentials({
+                variables: values,
+              });
 
-              console.log(values);
+              const { loginWithCredentials: authUser } = data as {
+                loginWithCredentials: UserType | null;
+              };
+
+              if (authUser) {
+                setUser(authUser);
+                addToast('Logged in successfully', {
+                  appearance: 'success',
+                  autoDismiss: true,
+                  onDismiss: () => {
+                    route.push('/');
+                  },
+                });
+              } else {
+                addToast('Invalid username or password', {
+                  appearance: 'error',
+                  autoDismiss: true,
+                });
+              }
+
               setSubmitting(false);
+              setValues({
+                username: '',
+                password: '',
+              });
+              setErrors({});
             }}
           >
-            {({ errors, getFieldProps, handleSubmit }) => (
+            {({ getFieldProps, handleSubmit, isSubmitting }) => (
               <Form onSubmit={handleSubmit}>
                 <div className="mb-4">
                   <label
@@ -86,6 +124,7 @@ const Login: NextPage = () => {
                   <button
                     type="submit"
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    disabled={isSubmitting}
                   >
                     Login
                   </button>
@@ -108,4 +147,4 @@ const Login: NextPage = () => {
   );
 };
 
-export default Login;
+export default withApollo({ ssr: false })(Login);
