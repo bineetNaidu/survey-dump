@@ -4,14 +4,14 @@ import { Formik, Form, ErrorMessage } from 'formik';
 import Link from 'next/link';
 import { withApollo } from '../lib/nextApollo';
 import { useMutation } from '@apollo/client';
-import { CREATE_USER } from '../lib/queries';
+// import { CREATE_USER } from '../lib/queries';
 import type { UserType } from '../lib/types';
 import { userStore } from '../lib/stores/users.store';
 import { useToasts } from 'react-toast-notifications';
 import { useRouter } from 'next/router';
 
 const Signup: NextPage = () => {
-  const [createUser] = useMutation(CREATE_USER);
+  // const [createUser] = useMutation(CREATE_USER);
   const { setUser } = userStore();
   const { addToast } = useToasts();
   const route = useRouter();
@@ -56,44 +56,44 @@ const Signup: NextPage = () => {
             onSubmit={async (values, { setSubmitting, setErrors }) => {
               setSubmitting(true);
 
-              const date = new Date();
-              const createdAt = `${date.getFullYear()}-${
-                date.getMonth() < 10
-                  ? `0${date.getMonth() + 1}`
-                  : date.getMonth() + 1
-              }-${date.getDate()}`;
+              // const date = new Date();
+              // const createdAt = `${date.getFullYear()}-${
+              //   date.getMonth() < 10
+              //     ? `0${date.getMonth() + 1}`
+              //     : date.getMonth() + 1
+              // }-${date.getDate()}`;
 
-              const { data, errors } = await createUser({
-                variables: {
-                  data: {
-                    email: values.email,
-                    username: values.username,
-                    avatar: values.avatar,
-                    password: values.password,
-                    surveys: [],
-                    createdAt,
-                  },
-                },
-              });
+              // const { data, errors } = await createUser({
+              //   variables: {
+              //     data: {
+              //       email: values.email,
+              //       username: values.username,
+              //       avatar: values.avatar,
+              //       password: values.password,
+              //       surveys: [],
+              //       createdAt,
+              //     },
+              //   },
+              // });
 
-              const { createUser: authUser } = data as {
-                createUser: UserType | null;
-              };
+              // const { createUser: authUser } = data as {
+              //   createUser: UserType | null;
+              // };
 
-              console.log(data);
-              // if (errors) {
+              // console.log(data);
+              // // if (errors) {
+              // // }
+
+              // if (authUser) {
+              //   setUser(authUser);
+              //   addToast('Logged in successfully', {
+              //     appearance: 'success',
+              //     autoDismiss: true,
+              //     onDismiss: () => {
+              //       route.push('/');
+              //     },
+              //   });
               // }
-
-              if (authUser) {
-                setUser(authUser);
-                addToast('Logged in successfully', {
-                  appearance: 'success',
-                  autoDismiss: true,
-                  onDismiss: () => {
-                    route.push('/');
-                  },
-                });
-              }
 
               setSubmitting(false);
               setErrors({});

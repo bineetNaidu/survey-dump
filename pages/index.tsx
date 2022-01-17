@@ -1,8 +1,23 @@
 import type { NextPage } from 'next';
 import Link from 'next/link';
 import { Navbar } from '../components/Navbar';
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { useSession } from 'next-auth/react';
+import { userStore } from '../lib/stores/users.store';
 
 const Home: NextPage = () => {
+  const router = useRouter();
+  const { status, data } = useSession();
+  const { setUser } = userStore();
+
+  useEffect(() => {
+    if (status === 'authenticated' && data?.user) {
+      setUser(data.user as any);
+      router.push('/dashboard');
+    }
+  }, [status, data, setUser, router]);
+
   return (
     <>
       <Navbar />
