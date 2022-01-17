@@ -4,7 +4,7 @@ import { Navbar } from '../components/Navbar';
 
 const Home: NextPage = () => {
   return (
-    <div className="container mx-auto py-4">
+    <>
       <Navbar />
 
       <main className="flex my-20 justify-between items-center">
@@ -41,7 +41,7 @@ const Home: NextPage = () => {
           </div>
         </div>
       </main>
-    </div>
+    </>
   );
 };
 
