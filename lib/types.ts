@@ -29,4 +29,5 @@ export type SurveyType = {
   creator: Pick<UserType, 'email'>;
   createdAt: Date | string;
   title: string;
+  status: 'ACTIVE' | 'INACTIVE' | 'DRAFT';
 };
