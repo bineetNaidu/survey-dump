@@ -18,7 +18,7 @@ const Login: NextPage = () => {
   const route = useRouter();
 
   return (
-    <>
+    <div className="container mx-auto py-4">
       <Navbar />
 
       <div className="flex justify-center items-center my-8">
@@ -143,7 +143,7 @@ const Login: NextPage = () => {
           <GoogleAuthBtn />
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

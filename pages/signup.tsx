@@ -17,7 +17,7 @@ const Signup: NextPage = () => {
   const route = useRouter();
 
   return (
-    <>
+    <div className="container mx-auto py-4">
       <Navbar />
 
       <div className="flex justify-center items-center my-8">
@@ -229,7 +229,7 @@ const Signup: NextPage = () => {
           </Formik>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

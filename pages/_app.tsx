@@ -8,7 +8,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     <>
       <SessionProvider session={pageProps.session}>
         <ToastProvider placement="top-right">
-          <div className="min-h-screen h-full container mx-auto py-4">
+          <div className="min-h-screen h-full">
             <Component {...pageProps} />
           </div>
         </ToastProvider>

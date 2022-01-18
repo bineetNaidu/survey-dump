@@ -19,7 +19,7 @@ const Home: NextPage = () => {
   }, [status, data, setUser, router]);
 
   return (
-    <>
+    <div className="container mx-auto py-4">
       <Navbar />
 
       <main className="flex my-20 justify-between items-center">
@@ -56,7 +56,7 @@ const Home: NextPage = () => {
           </div>
         </div>
       </main>
-    </>
+    </div>
   );
 };
 
