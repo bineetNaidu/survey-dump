@@ -1,5 +1,34 @@
 import { gql } from '@apollo/client';
 
+export const GET_SURVEYS = gql`
+  query GetSurveys($creator: String!) {
+    surveys(creator: $creator) {
+      data {
+        description
+        _id
+        slug
+        questions {
+          _id
+          isOption
+          isField
+          options {
+            _id
+            name
+            createdAt
+            other
+          }
+          createdAt
+          title
+          fieldPlaceholder
+        }
+        creator
+        createdAt
+        title
+      }
+    }
+  }
+`;
+
 export const GET_SURVEY = gql`
   query GetSurvey($surveyId: ID!) {
     getSurvey(slug: $slug) {
