@@ -4,7 +4,7 @@ import { IoMdSettings } from 'react-icons/io';
 import { MdSpaceDashboard, MdOutlineBugReport } from 'react-icons/md';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { userStore } from '../lib/stores/users.store';
 import { UserType } from '../lib/types';
 
@@ -20,6 +20,12 @@ export const SideNavbar: FC = () => {
       setUser(data!.user as UserType);
     }
   }, [router, status, data, setUser]);
+
+  const handleLogout = async () => {
+    await signOut();
+    logout();
+    router.push('/login');
+  };
 
   return (
     <div className="md:w-1/12 sm:w-0 transition-all bg-gray-200 h-screen">
@@ -60,22 +66,23 @@ export const SideNavbar: FC = () => {
           </Link>
         </div>
 
-        <div className="flex justify-center pl-3 ransition-all hover:bg-[#b5b5b52e] mt-2 py-2 rounded cursor-pointer">
-          {authUser ? (
-            <>
-              <Image
-                src={authUser.image}
-                width={40}
-                height={40}
-                alt={authUser.name}
-                className="rounded-full"
-              />
-              <span className="ml-2 text-white text-xs">{authUser.name}</span>
-            </>
-          ) : (
-            <h1>No Auth User</h1>
-          )}
-        </div>
+        {authUser ? (
+          <div
+            className="flex justify-center pl-3 ransition-all hover:bg-[#b5b5b52e] mt-2 py-2 rounded cursor-pointer"
+            onClick={handleLogout}
+          >
+            <Image
+              src={authUser.image}
+              width={40}
+              height={40}
+              alt={authUser.name}
+              className="rounded-full"
+            />
+            <span className="ml-2 text-white text-xs">{authUser.name}</span>
+          </div>
+        ) : (
+          <h1 className="tetx-white uppercase">No Auth User</h1>
+        )}
       </div>
     </div>
   );
