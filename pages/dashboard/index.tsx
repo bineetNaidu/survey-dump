@@ -5,61 +5,26 @@ import { SideNavbar } from '../../components/SideNavbar';
 import { withApollo } from '../../lib/nextApollo';
 import { surveyStore } from '../../lib/stores/survey.store';
 import { userStore } from '../../lib/stores/users.store';
-import type { SurveyType } from '../../lib/types';
-import { GET_SURVEYS, CREATE_SURVEY } from '../../lib/queries';
-import { useQuery, useMutation } from '@apollo/client';
-import { CreateSurveyModal } from '../../components/CreateSurveyModal';
-import { getCreatedAt } from '../../lib/utils';
-import { nanoid } from 'nanoid';
+import { GET_SURVEYS } from '../../lib/queries';
+import { useQuery } from '@apollo/client';
+import { MultiStepModal } from '../../components/MultiStepModal';
 
 const Dashboard: NextPage = () => {
-  const { surveys, setSurveys, addSurvey } = surveyStore();
+  const { surveys, setSurveys } = surveyStore();
   const { authUser } = userStore();
   const [show, setShow] = useState(false);
-  const [createSurvey] = useMutation(CREATE_SURVEY);
 
-  const { data, loading, error, refetch } = useQuery(GET_SURVEYS, {
+  const { data } = useQuery(GET_SURVEYS, {
     variables: {
       creator: authUser?.email,
     },
   });
 
   useEffect(() => {
-    console.log(data);
-    console.log(loading);
-    console.log(error);
     if (data) {
       setSurveys(data.getSurveys.data);
     }
-  }, [data, loading, error, setSurveys]);
-
-  const handleCreateSurveySubmit = async (
-    title: string,
-    description: string
-  ) => {
-    try {
-      if (!authUser) throw new Error('User not authenticated');
-      const obj = {
-        title,
-        description,
-        questions: [],
-        creator: authUser.email as any,
-        createdAt: getCreatedAt(),
-        status: 'DRAFT',
-        slug: nanoid(),
-      };
-      const { data } = await createSurvey({
-        variables: { data: obj },
-      });
-      console.log(`Created survey: ${JSON.stringify(data, null, 2)}`);
-      const { createSurvey: newSurvey } = data;
-      if (newSurvey) {
-        addSurvey(newSurvey);
-      }
-    } catch (e) {
-      throw new Error((e as Error).message);
-    }
-  };
+  }, [data, setSurveys]);
 
   return (
     <>
@@ -68,13 +33,7 @@ const Dashboard: NextPage = () => {
       </Head>
       <div className="flex ">
         <SideNavbar />
-        {authUser && (
-          <CreateSurveyModal
-            show={show}
-            setShow={setShow}
-            handleCreateSurveySubmit={handleCreateSurveySubmit}
-          />
-        )}
+        {authUser && <MultiStepModal show={show} setShow={setShow} />}
         <div className="md:w-11/12 sm:w-full bg-gray-200 h-screen transition-all">
           <div className="h-full bg-gray-200 container mx-auto p-4">
             <h1>Latests Surveys</h1>
