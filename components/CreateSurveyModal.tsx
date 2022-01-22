@@ -7,11 +7,16 @@ import { getCreatedAt } from '../lib/utils';
 import { nanoid } from 'nanoid';
 import { surveyStore } from '../lib/stores/survey.store';
 import { userStore } from '../lib/stores/users.store';
+import { SurveyType } from '../lib/types';
 interface CreateSurveyFormProps {
   handleNext: () => void;
+  setSurveyId: (surveyId: string) => void;
 }
 
-export const CreateSurveyForm: FC<CreateSurveyFormProps> = ({ handleNext }) => {
+export const CreateSurveyForm: FC<CreateSurveyFormProps> = ({
+  handleNext,
+  setSurveyId,
+}) => {
   const { addToast } = useToasts();
   const [createSurvey] = useMutation(CREATE_SURVEY);
   const { authUser } = userStore();
@@ -35,10 +40,11 @@ export const CreateSurveyForm: FC<CreateSurveyFormProps> = ({ handleNext }) => {
       const { data } = await createSurvey({
         variables: { data: obj },
       });
-      console.log(`Created survey: ${JSON.stringify(data, null, 2)}`);
+
       const { createSurvey: newSurvey } = data;
       if (newSurvey) {
         addSurvey(newSurvey);
+        setSurveyId(newSurvey._id);
       }
     } catch (e) {
       throw new Error((e as Error).message);
