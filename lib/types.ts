@@ -9,16 +9,18 @@ export type OptionType = {
   name: string;
   createdAt: Date | string;
   other?: string;
+  question: QuestionType;
 };
 
 export type QuestionType = {
   _id: string;
-  isOption: string;
-  isField: string;
+  isOption: boolean;
+  isField: boolean;
   createdAt: Date | string;
   title: string;
   fieldPlaceholder?: string;
   options?: OptionType[];
+  survey: SurveyType;
 };
 
 export type SurveyType = {
