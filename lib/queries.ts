@@ -76,7 +76,9 @@ export const CREATE_QUESTION = gql`
     createQuestion(data: $data) {
       _id
       isOption
-      surveyId
+      survey {
+        _id
+      }
       isField
       options {
         _id
@@ -91,7 +93,9 @@ export const CREATE_QUESTION = gql`
 export const CREATE_OPTION = gql`
   mutation CreateOption($data: OptionInput!) {
     createOption(data: $data) {
-      questionId
+      question {
+        _id
+      }
       name
       _id
       createdAt

@@ -8,7 +8,7 @@ type Option {
   name: String!
   other: String
   createdAt: Date!
-  questionId: Question!
+  question: Question!
 }
 
 type Question {
@@ -18,7 +18,7 @@ type Question {
   options: [Option]
   fieldPlaceholder: String
   createdAt: Date!
-  surveyId: Survey!
+  survey: Survey!
 }
 
 type Survey {
