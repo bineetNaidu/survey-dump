@@ -5,6 +5,7 @@ export const GET_SURVEYS = gql`
     getSurveys(creator: $creator) {
       data {
         description
+        status
         _id
         slug
         questions {
@@ -33,6 +34,7 @@ export const GET_SURVEY = gql`
   query GetSurvey($surveyId: ID!) {
     getSurvey(slug: $slug) {
       description
+      status
       _id
       slug
       questions {
