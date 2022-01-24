@@ -5,14 +5,23 @@ import { SideNavbar } from '../../components/SideNavbar';
 import { withApollo } from '../../lib/nextApollo';
 import { surveyStore } from '../../lib/stores/survey.store';
 import { userStore } from '../../lib/stores/users.store';
-import { GET_SURVEYS } from '../../lib/queries';
-import { useQuery } from '@apollo/client';
+import { GET_SURVEYS, DELETE_SURVEY } from '../../lib/queries';
+import { useQuery, useMutation } from '@apollo/client';
 import { MultiStepModal } from '../../components/MultiStepModal';
+import { FaTrash } from 'react-icons/fa';
+import { FiExternalLink } from 'react-icons/fi';
+import { DeleteSurveyPromt } from '../../components/DeleteSurveyPromt';
+import { useToasts } from 'react-toast-notifications';
 
 const Dashboard: NextPage = () => {
-  const { surveys, setSurveys } = surveyStore();
+  const { surveys, setSurveys, removeSurvey } = surveyStore();
   const { authUser } = userStore();
+  const { addToast } = useToasts();
   const [show, setShow] = useState(false);
+  const [showDeleteSurveyPromt, setShowDeleteSurveyPromt] = useState(false);
+  const [deleteSurveyId, setDeleteSurveyId] = useState<null | string>(null);
+
+  const [deleteSurvey] = useMutation(DELETE_SURVEY);
 
   const { data } = useQuery(GET_SURVEYS, {
     variables: {
@@ -26,15 +35,58 @@ const Dashboard: NextPage = () => {
     }
   }, [data, setSurveys]);
 
+  const handleDeleteSurvey = async () => {
+    try {
+      if (!deleteSurveyId) throw new Error('No survey id was provided');
+      const { data: deletedSurveyData } = await deleteSurvey({
+        variables: { surveyId: deleteSurveyId },
+      });
+      removeSurvey(deletedSurveyData.deleteSurvey._id);
+      setDeleteSurveyId(null);
+      setShowDeleteSurveyPromt(false);
+      addToast('Survey deleted successfully', {
+        appearance: 'success',
+        autoDismiss: true,
+        id: 'delete-survey-success',
+      });
+    } catch (err) {
+      addToast('Error deleting survey', {
+        appearance: 'error',
+        autoDismiss: true,
+        id: 'delete-survey-error',
+      });
+    }
+  };
+
+  const handleCloseDeleteSurveyPromt = () => {
+    setDeleteSurveyId(null);
+    setShowDeleteSurveyPromt(false);
+  };
+
+  const handleShowDeleteSurveyPromt = (surveyId: string) => {
+    setDeleteSurveyId(surveyId);
+    setShowDeleteSurveyPromt(true);
+  };
+
   return (
     <>
       <Head>
         <title>Dashboard</title>
       </Head>
-      <div className="flex ">
+      <div className="flex">
         <SideNavbar />
-        {authUser && <MultiStepModal show={show} setShow={setShow} />}
-        <div className="md:w-11/12 sm:w-full bg-gray-200 h-screen transition-all">
+        {authUser && (
+          <>
+            <MultiStepModal show={show} setShow={setShow} />
+            <DeleteSurveyPromt
+              handleCancel={handleCloseDeleteSurveyPromt}
+              handleDelete={handleDeleteSurvey}
+              show={showDeleteSurveyPromt}
+              setShow={setShowDeleteSurveyPromt}
+            />
+          </>
+        )}
+        <div className="md:w-11/12 sm:w-full bg-gray-200 min-h-screen h-full transition-all">
           <div className="h-full bg-gray-200 container mx-auto p-4">
             <h1>Latests Surveys</h1>
 
@@ -59,6 +111,12 @@ const Dashboard: NextPage = () => {
                           Created At
                         </div>
                       </th>
+                      <th className="p-2 whitespace-nowrap">
+                        <div className="font-semibold text-left">Status</div>
+                      </th>
+                      <th className="p-2 whitespace-nowrap">
+                        <div className="font-semibold text-center">Actions</div>
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="text-sm divide-y divide-gray-100">
@@ -79,11 +137,29 @@ const Dashboard: NextPage = () => {
                           <td className="p-2 whitespace-nowrap">
                             <div className="text-left">{survey.createdAt}</div>
                           </td>
+                          <td className="p-2 whitespace-nowrap">
+                            <div className="text-left">{survey.status}</div>
+                          </td>
+                          <td className="p-2 whitespace-nowrap">
+                            <div className="flex w-full justify-evenly items-center">
+                              <button
+                                className="h-8 w-8 text-sm text-blue-500 p-2 rounded border border-blue-500 hover:text-white hover:bg-red-500 hover:border-transparent transition-all"
+                                onClick={() =>
+                                  handleShowDeleteSurveyPromt(survey._id)
+                                }
+                              >
+                                <FaTrash />
+                              </button>
+                              <button className="h-8 w-8 text-sm text-blue-500 p-2 rounded border border-blue-500 hover:text-white hover:bg-green-500 hover:border-transparent transition-all">
+                                <FiExternalLink />
+                              </button>
+                            </div>
+                          </td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={3}>
+                        <td colSpan={6}>
                           <div className="text-center hover:underline">
                             No Surveys, Please create one
                           </div>
@@ -91,7 +167,7 @@ const Dashboard: NextPage = () => {
                       </tr>
                     )}
                     <tr>
-                      <td colSpan={3}>
+                      <td colSpan={6}>
                         <div
                           className="flex justify-center items-center mt-2"
                           onClick={() => setShow(true)}
