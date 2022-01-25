@@ -3,7 +3,7 @@ import { Field, ObjectType } from 'type-graphql';
 import { getModelForClass, prop as Property, Ref } from '@typegoose/typegoose';
 import { Question } from './Question';
 
-enum SurveyStatus {
+export enum SurveyStatus {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
   DRAFT = 'DRAFT',

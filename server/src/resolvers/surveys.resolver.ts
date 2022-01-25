@@ -1,4 +1,4 @@
-import { Survey, SurveyModel } from '../models/Survey';
+import { Survey, SurveyModel, SurveyStatus } from '../models/Survey';
 import { Arg, Query, Resolver, Mutation, InputType, Field } from 'type-graphql';
 import { nanoid } from 'nanoid';
 
@@ -46,5 +46,19 @@ export class SurveyResolver {
     }
     await survey.remove();
     return true;
+  }
+
+  @Mutation(() => Survey, { nullable: true })
+  async updateSurveyStatus(
+    @Arg('id') id: string,
+    @Arg('status') status: SurveyStatus
+  ) {
+    const survey = await SurveyModel.findById(id);
+    if (!survey) {
+      return null;
+    }
+    survey.status = status;
+    await survey.save();
+    return survey;
   }
 }
