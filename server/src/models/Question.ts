@@ -1,9 +1,23 @@
 import { ObjectId } from 'mongodb';
 import { Field, ObjectType } from 'type-graphql';
-import { getModelForClass, prop as Property, Ref } from '@typegoose/typegoose';
+import {
+  getModelForClass,
+  prop as Property,
+  Ref,
+  post,
+} from '@typegoose/typegoose';
 import { Survey } from './Survey';
-import { Option } from './Option';
+import { Option, OptionModel } from './Option';
 
+@post<Question>('remove', async (question) => {
+  if (question) {
+    await OptionModel.deleteMany({
+      _id: {
+        $in: question.options,
+      },
+    });
+  }
+})
 @ObjectType()
 export class Question {
   @Field(() => String)

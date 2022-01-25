@@ -1,7 +1,13 @@
 import { ObjectId } from 'mongodb';
 import { Field, ObjectType } from 'type-graphql';
-import { getModelForClass, prop as Property, Ref } from '@typegoose/typegoose';
-import { Question } from './Question';
+import {
+  getModelForClass,
+  prop as Property,
+  Ref,
+  post,
+} from '@typegoose/typegoose';
+import { Question, QuestionModel } from './Question';
+import { OptionModel } from './Option';
 
 export enum SurveyStatus {
   ACTIVE = 'ACTIVE',
@@ -9,6 +15,30 @@ export enum SurveyStatus {
   DRAFT = 'DRAFT',
 }
 
+@post<Survey>('remove', async (survey) => {
+  if (survey) {
+    // first find the questions
+    const questions = await QuestionModel.find({
+      _id: {
+        $in: survey.questions,
+      },
+    });
+    // then delete the options from the questions
+    for (const question of questions) {
+      await OptionModel.deleteMany({
+        _id: {
+          $in: question.options,
+        },
+      });
+    }
+    // then delete the questions
+    await QuestionModel.deleteMany({
+      _id: {
+        $in: survey.questions,
+      },
+    });
+  }
+})
 @ObjectType()
 export class Survey {
   @Field(() => String)
