@@ -3,8 +3,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { ApolloServer } from 'apollo-server';
 import { buildSchema } from 'type-graphql';
-import { HelloResolver } from './resolvers/Hello';
-import { TweetResolver } from './resolvers/TweetResolver';
+import { SurveyResolver } from './resolvers/surveys.resolver';
 
 dotenv.config();
 const bootstrap = async () => {
@@ -16,7 +15,7 @@ const bootstrap = async () => {
   const server = new ApolloServer({
     schema: await buildSchema({
       validate: false,
-      resolvers: [HelloResolver, TweetResolver],
+      resolvers: [SurveyResolver],
     }),
   });
 
