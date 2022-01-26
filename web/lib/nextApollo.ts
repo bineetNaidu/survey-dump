@@ -2,17 +2,17 @@ import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
 import { withApollo as createWithApollo } from 'next-apollo';
 import { setContext } from '@apollo/client/link/context';
 
+// const uri = process.env.GRAPHQL_ENDPOINT!;
+// console.log(uri);
+
 const httpLink = createHttpLink({
-  uri: 'https://graphql.eu.fauna.com/graphql',
+  uri: 'http://localhost:4000/graphql',
 });
 
 const authLink = setContext((_, { headers }) => {
-  // get the authentication token from local storage if it exists
-  // return the headers to the context so httpLink can read them
   return {
     headers: {
       ...headers,
-      authorization: `Bearer ${process.env.FAUNADB_SECRET!}`,
     },
   };
 });
