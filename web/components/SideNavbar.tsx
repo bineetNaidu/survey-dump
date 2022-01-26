@@ -27,14 +27,22 @@ export const SideNavbar: FC = () => {
   };
 
   return (
-    <div className="md:w-1/12 sm:w-0 transition-all bg-gray-200 h-screen">
+    <div className="md:w-1/12 w-0 transition-all bg-gray-200 h-screen">
       <div className="h-full bg-blue-900 flex flex-col items-center justify-between py-4">
         <div className="flex justify-center items-center h-16">
           <h1 className="text-4xl font-extrabold text-white pointer-events-none">
             <Link href="/">
-              <a className="before:content-[':{'] after:content-['}:'] before:pr-2 after:pl-2">
-                S
+              <a>
+                <Image
+                  src="/assets/sideNavBrandLogo.svg"
+                  alt="Brand logo"
+                  width={90}
+                  height={90}
+                />
               </a>
+              {/* <a className="before:content-[':{'] after:content-['}:'] before:pr-2 after:pl-2">
+                S
+              </a> */}
             </Link>
           </h1>
         </div>

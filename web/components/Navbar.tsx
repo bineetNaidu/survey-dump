@@ -1,14 +1,24 @@
 import { FC } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export const Navbar: FC = () => {
   return (
     <nav className="flex justify-between items-center">
       <h1 className="text-4xl font-extrabold text-blue-600">
         <Link href="/">
-          <a className="before:content-[':{'] after:content-['}:'] before:pr-2 after:pl-2">
-            Survey Dump
+          <a>
+            <Image
+              src="/assets/navBrandLogo.svg"
+              alt="Brand logo"
+              height={48}
+              width={290}
+            />
           </a>
+
+          {/* <a className="before:content-[':{'] after:content-['}:'] before:pr-2 after:pl-2">
+            Survey Dump
+          </a> */}
         </Link>
       </h1>
 
