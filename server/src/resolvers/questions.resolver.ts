@@ -54,15 +54,14 @@ export class QuestionResolver {
 
   @Mutation(() => Question)
   async createQuestion(@Arg('data') data: QuestionInput): Promise<Question> {
-    if (data.isOption && data.options.length === 0) {
+    if (!data.isOption && !data.isField)
+      throw new Error('Question must be either an option or a field');
+    if (data.isOption && data.options.length === 0)
       throw new Error('Options are required for an option question');
-    }
-    if (data.isField && !data.fieldPlaceholder) {
+    if (data.isField && !data.fieldPlaceholder)
       throw new Error('Placeholder is required for a field question');
-    }
-    if (data.isField && data.isOption) {
+    if (data.isField && data.isOption)
       throw new Error('A question cannot be both an option and a field');
-    }
 
     const question = new QuestionModel();
     const survey = await SurveyModel.findById(data.survey);
@@ -103,7 +102,8 @@ export class QuestionResolver {
     const q = await QuestionModel.findById(id);
     if (!q) return null;
     if (data.title) q.title = data.title;
-    if (data.fieldPlaceholder) q.fieldPlaceholder = data.fieldPlaceholder;
+    if (q.isField && data.fieldPlaceholder)
+      q.fieldPlaceholder = data.fieldPlaceholder;
     await q.save();
     return q;
   }
