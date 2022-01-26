@@ -1,0 +1,5 @@
+fragment BaseOption on Option {
+  _id
+  name
+  other
+}

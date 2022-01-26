@@ -1,13 +1,9 @@
 import { FC } from 'react';
 import { Form, Formik } from 'formik';
 import { useToasts } from 'react-toast-notifications';
-import { CREATE_SURVEY } from '../lib/queries';
-import { useMutation } from '@apollo/client';
-import { getCreatedAt } from '../lib/utils';
-import { nanoid } from 'nanoid';
 import { surveyStore } from '../lib/stores/survey.store';
 import { userStore } from '../lib/stores/users.store';
-import { SurveyType } from '../lib/types';
+import { useCreateSurveyMutation } from '../lib/graphql';
 interface CreateSurveyFormProps {
   handleNext: () => void;
   setSurveyId: (surveyId: string) => void;
@@ -18,7 +14,7 @@ export const CreateSurveyForm: FC<CreateSurveyFormProps> = ({
   setSurveyId,
 }) => {
   const { addToast } = useToasts();
-  const [createSurvey] = useMutation(CREATE_SURVEY);
+  const [createSurvey] = useCreateSurveyMutation();
   const { authUser } = userStore();
   const { addSurvey } = surveyStore();
 
@@ -28,23 +24,19 @@ export const CreateSurveyForm: FC<CreateSurveyFormProps> = ({
   ) => {
     try {
       if (!authUser) throw new Error('User not authenticated');
-      const obj = {
-        title,
-        description,
-        questions: [],
-        creator: authUser.email as any,
-        createdAt: getCreatedAt(),
-        status: 'DRAFT',
-        slug: nanoid(),
-      };
       const { data } = await createSurvey({
-        variables: { data: obj },
+        variables: {
+          data: {
+            creator: authUser.email,
+            description,
+            title,
+          },
+        },
       });
 
-      const { createSurvey: newSurvey } = data;
-      if (newSurvey) {
-        addSurvey(newSurvey);
-        setSurveyId(newSurvey._id);
+      if (data?.createSurvey) {
+        addSurvey(data?.createSurvey as any);
+        setSurveyId(data?.createSurvey._id);
       }
     } catch (e) {
       throw new Error((e as Error).message);

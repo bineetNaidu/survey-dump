@@ -1,0 +1,8 @@
+mutation CreateSurvey($data: SurveyInput!) {
+  createSurvey(data: $data) {
+    ...BaseSurvey
+    questions {
+      _id
+    }
+  }
+}

@@ -1,0 +1,8 @@
+query GetSurveys($creator: String!) {
+  getSurveys(creator: $creator) {
+    ...BaseSurvey
+    questions {
+      ...BaseQuestion
+    }
+  }
+}

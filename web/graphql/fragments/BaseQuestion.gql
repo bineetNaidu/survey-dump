@@ -1,0 +1,13 @@
+fragment BaseQuestion on Question {
+  _id
+  fieldPlaceholder
+  isField
+  isOption
+  title
+  options {
+    ...BaseOption
+  }
+  survey {
+    _id
+  }
+}

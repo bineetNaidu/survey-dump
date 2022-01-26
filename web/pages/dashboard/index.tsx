@@ -5,13 +5,12 @@ import { SideNavbar } from '../../components/SideNavbar';
 import { withApollo } from '../../lib/nextApollo';
 import { surveyStore } from '../../lib/stores/survey.store';
 import { userStore } from '../../lib/stores/users.store';
-import { GET_SURVEYS, DELETE_SURVEY } from '../../lib/queries';
-import { useQuery, useMutation } from '@apollo/client';
 import { MultiStepModal } from '../../components/MultiStepModal';
 import { FaTrash } from 'react-icons/fa';
 import { FiExternalLink } from 'react-icons/fi';
 import { DeleteSurveyPromt } from '../../components/DeleteSurveyPromt';
 import { useToasts } from 'react-toast-notifications';
+import { useGetSurveysQuery, useDeleteSurveyMutation } from '../../lib/graphql';
 
 const Dashboard: NextPage = () => {
   const { surveys, setSurveys, removeSurvey } = surveyStore();
@@ -21,17 +20,17 @@ const Dashboard: NextPage = () => {
   const [showDeleteSurveyPromt, setShowDeleteSurveyPromt] = useState(false);
   const [deleteSurveyId, setDeleteSurveyId] = useState<null | string>(null);
 
-  const [deleteSurvey] = useMutation(DELETE_SURVEY);
+  const [deleteSurvey] = useDeleteSurveyMutation();
 
-  const { data } = useQuery(GET_SURVEYS, {
+  const { data } = useGetSurveysQuery({
     variables: {
-      creator: authUser?.email,
+      creator: authUser?.email || '',
     },
   });
 
   useEffect(() => {
     if (data) {
-      setSurveys(data.getSurveys.data);
+      setSurveys(data.getSurveys as any);
     }
   }, [data, setSurveys]);
 
@@ -39,9 +38,12 @@ const Dashboard: NextPage = () => {
     try {
       if (!deleteSurveyId) throw new Error('No survey id was provided');
       const { data: deletedSurveyData } = await deleteSurvey({
-        variables: { surveyId: deleteSurveyId },
+        variables: { deleteSurveyId },
       });
-      removeSurvey(deletedSurveyData.deleteSurvey._id);
+      if (!deletedSurveyData?.deleteSurvey) {
+        throw new Error('Survey could not be deleted');
+      }
+      removeSurvey(deleteSurveyId);
       setDeleteSurveyId(null);
       setShowDeleteSurveyPromt(false);
       addToast('Survey deleted successfully', {
@@ -135,7 +137,10 @@ const Dashboard: NextPage = () => {
                             </span>
                           </td>
                           <td className="p-2 whitespace-nowrap">
-                            <div className="text-left">{survey.createdAt}</div>
+                            <div className="text-left">
+                              12-12-12
+                              {/* {survey.createdAt} */}
+                            </div>
                           </td>
                           <td className="p-2 whitespace-nowrap">
                             <div className="text-left">{survey.status}</div>
