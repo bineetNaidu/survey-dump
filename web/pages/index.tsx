@@ -5,18 +5,26 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
 import { userStore } from '../lib/stores/users.store';
+import { useToasts } from 'react-toast-notifications';
 
 const Home: NextPage = () => {
   const router = useRouter();
   const { status, data } = useSession();
   const { setUser } = userStore();
+  const { addToast } = useToasts();
 
   useEffect(() => {
     if (status === 'authenticated' && data?.user) {
       setUser(data.user as any);
+      addToast(`Authenticated as ${data.user.email}`, {
+        appearance: 'success',
+        autoDismissTimeout: 2000,
+        autoDismiss: true,
+        id: 'authenticated',
+      });
       router.push('/dashboard');
     }
-  }, [status, data, setUser, router]);
+  }, [status, data, setUser, router, addToast]);
 
   return (
     <div className="container mx-auto py-4">
