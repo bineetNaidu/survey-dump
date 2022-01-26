@@ -13,6 +13,11 @@ export default NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
+  callbacks: {
+    redirect() {
+      return '/';
+    },
+  },
   secret: process.env.SESSION_SECRET!,
   adapter: MongoDBAdapter(clientPromise),
   theme: {
