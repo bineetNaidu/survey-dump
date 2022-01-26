@@ -1,0 +1,8 @@
+fragment BaseSurvey on Survey {
+  _id
+  slug
+  title
+  description
+  creator
+  status
+}

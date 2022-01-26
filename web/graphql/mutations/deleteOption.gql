@@ -1,0 +1,3 @@
+mutation DeleteOption($questionId: String!, $deleteOptionId: String!) {
+  deleteOption(questionId: $questionId, id: $deleteOptionId)
+}

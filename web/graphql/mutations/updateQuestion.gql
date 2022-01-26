@@ -1,0 +1,8 @@
+mutation UpdateQuestion(
+  $data: UpdateQuestionInput!
+  $updateQuestionId: String!
+) {
+  updateQuestion(data: $data, id: $updateQuestionId) {
+    ...BaseQuestion
+  }
+}

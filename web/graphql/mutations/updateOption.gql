@@ -1,0 +1,5 @@
+mutation UpdateOption($data: OptionInput!, $updateOptionId: String!) {
+  updateOption(data: $data, id: $updateOptionId) {
+    ...BaseOption
+  }
+}

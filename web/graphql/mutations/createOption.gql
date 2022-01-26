@@ -1,0 +1,5 @@
+mutation CreateOption($data: OptionInput!, $questionId: String!) {
+  createOption(data: $data, questionId: $questionId) {
+    ...BaseOption
+  }
+}

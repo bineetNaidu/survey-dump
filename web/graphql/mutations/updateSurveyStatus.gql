@@ -1,0 +1,8 @@
+mutation UpdateSurveyStatus($status: String!, $updateSurveyStatusId: String!) {
+  updateSurveyStatus(status: $status, id: $updateSurveyStatusId) {
+    ...BaseSurvey
+    questions {
+      ...BaseQuestion
+    }
+  }
+}
