@@ -1,14 +1,7 @@
 import NextAuth from 'next-auth';
-import { Client as FaunaClient } from 'faunadb';
-import { FaunaAdapter } from '@next-auth/fauna-adapter';
 import GoogleProvider from 'next-auth/providers/google';
-
-const client = new FaunaClient({
-  secret: process.env.FAUNADB_SECRET!,
-  scheme: 'https',
-  domain: 'db.eu.fauna.com',
-  port: 443,
-});
+import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
+import clientPromise from '../../../lib/mongodb';
 
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
@@ -21,15 +14,9 @@ export default NextAuth({
     }),
   ],
   secret: process.env.SESSION_SECRET!,
-  adapter: FaunaAdapter(client),
+  adapter: MongoDBAdapter(clientPromise),
   theme: {
     colorScheme: 'dark',
     brandColor: '#0070f3',
-    logo: 'https://nextjs.org/static/images/nextjs-logo.svg',
-  },
-  callbacks: {
-    redirect({ url, baseUrl }) {
-      return '/';
-    },
   },
 });
