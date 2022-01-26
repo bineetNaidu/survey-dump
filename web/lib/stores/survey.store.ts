@@ -1,12 +1,12 @@
 import create from 'zustand';
-import type { SurveyType } from '../types';
+import { Survey } from '../graphql';
 
 interface ISurveyStore {
-  surveys: SurveyType[];
-  setSurveys: (data: SurveyType[]) => void;
-  addSurvey: (data: SurveyType) => void;
+  surveys: Survey[];
+  setSurveys: (data: Survey[]) => void;
+  addSurvey: (data: Survey) => void;
   removeSurvey: (id: string) => void;
-  updateSurvey: (id: string, data: SurveyType) => void;
+  updateSurvey: (id: string, data: Survey) => void;
 }
 
 export const surveyStore = create<ISurveyStore>((set) => ({

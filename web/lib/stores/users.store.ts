@@ -1,5 +1,10 @@
 import create from 'zustand';
-import type { UserType } from '../types';
+
+type UserType = {
+  email: string;
+  image: string;
+  name: string;
+};
 
 interface IUsersStore {
   authUser: UserType | null;
