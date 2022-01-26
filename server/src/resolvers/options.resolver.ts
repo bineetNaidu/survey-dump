@@ -1,21 +1,14 @@
-import { Mutation, InputType, Field, Resolver, Arg } from 'type-graphql';
+import { Mutation, Resolver, Arg } from 'type-graphql';
 import { OptionModel, Option } from '../models/Option';
 import { QuestionModel } from '../models/Question';
-
-@InputType()
-class OptionsInput {
-  @Field({ nullable: true })
-  name?: string;
-  @Field({ nullable: true })
-  other?: string;
-}
+import { OptionInput } from './dto/options.dto';
 
 @Resolver()
 export class OptionResolver {
   @Mutation(() => Option)
   async createOption(
     @Arg('questionId') questionId: string,
-    @Arg('data') data: OptionsInput
+    @Arg('data') data: OptionInput
   ): Promise<Option> {
     const question = await QuestionModel.findById(questionId);
     if (!question) throw new Error('Question not found');
@@ -32,7 +25,7 @@ export class OptionResolver {
   @Mutation(() => Option, { nullable: true })
   async updateOption(
     @Arg('id') id: string,
-    @Arg('data') data: OptionsInput
+    @Arg('data') data: OptionInput
   ): Promise<Option | null> {
     const option = await OptionModel.findById(id);
     if (!option) return null;

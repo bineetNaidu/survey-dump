@@ -1,17 +1,7 @@
 import { Survey, SurveyModel, SurveyStatus } from '../models/Survey';
-import { Arg, Query, Resolver, Mutation, InputType, Field } from 'type-graphql';
+import { Arg, Query, Resolver, Mutation } from 'type-graphql';
 import { nanoid } from 'nanoid';
-
-// create a new survey input type
-@InputType()
-class SurveyInput {
-  @Field()
-  title!: string;
-  @Field()
-  description!: string;
-  @Field()
-  creator!: string;
-}
+import { SurveyInput } from './dto/surveys.dto';
 
 @Resolver()
 export class SurveyResolver {

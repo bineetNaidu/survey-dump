@@ -1,45 +1,8 @@
-import { Resolver, Query, Mutation, Arg, InputType, Field } from 'type-graphql';
+import { Resolver, Query, Mutation, Arg } from 'type-graphql';
 import { Question, QuestionModel } from '../models/Question';
 import { OptionModel } from '../models/Option';
 import { SurveyModel } from '../models/Survey';
-
-@InputType()
-class OptionInput {
-  @Field({ nullable: true })
-  name?: string;
-  @Field({ nullable: true })
-  other?: string;
-}
-
-@InputType()
-class QuestionInput {
-  @Field()
-  title!: string;
-
-  @Field()
-  isOption!: boolean;
-
-  @Field()
-  isField!: boolean;
-
-  @Field(() => String, { nullable: true })
-  fieldPlaceholder?: string;
-
-  @Field()
-  survey!: string;
-
-  @Field(() => [OptionInput])
-  options: OptionInput[];
-}
-
-@InputType()
-class UpdateQuestionInput {
-  @Field({ nullable: true })
-  title?: string;
-
-  @Field({ nullable: true })
-  fieldPlaceholder?: string;
-}
+import { QuestionInput, UpdateQuestionInput } from './dto/questions.dto';
 
 @Resolver()
 export class QuestionResolver {
