@@ -1,6 +1,6 @@
 import create from 'zustand';
 
-type UserType = {
+export type UserType = {
   email: string;
   image: string;
   name: string;

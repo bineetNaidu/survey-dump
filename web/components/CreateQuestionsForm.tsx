@@ -1,18 +1,20 @@
-import { FC, MouseEvent, useState } from 'react';
-import type { OptionType, QuestionType, SurveyType } from '../lib/types';
+import { FC, useState } from 'react';
 import { Formik, Form } from 'formik';
 import { useToasts } from 'react-toast-notifications';
-import { getCreatedAt } from '../lib/utils';
-import { CREATE_QUESTION, CREATE_OPTION } from '../lib/queries';
-import { useMutation } from '@apollo/client';
+import {
+  QuestionOptionInput,
+  Question,
+  useCreateQuestionMutation,
+} from '../lib/graphql';
+
+interface IQuestion extends Omit<Question, '_id' | 'options' | 'survey'> {
+  options: QuestionOptionInput[];
+}
 
 interface CreateSurveyFormProps {
   surveyId: string | null;
   handleClose: () => void;
 }
-
-type BaseQuestionType = Omit<QuestionType, '_id' | 'survey'>;
-type BaseOptionType = Omit<OptionType, '_id' | 'questionId'>;
 
 const defaultValues = {
   title: '',
@@ -22,12 +24,15 @@ const defaultValues = {
   options: [
     {
       name: '',
+      other: '',
     },
     {
       name: '',
+      other: '',
     },
     {
       name: '',
+      other: '',
     },
     {
       name: '',
@@ -41,49 +46,29 @@ export const CreateQuestionsForm: FC<CreateSurveyFormProps> = ({
   surveyId,
 }) => {
   const { addToast } = useToasts();
-  const [questions, setQuestions] = useState<BaseQuestionType[]>([]);
-  const [createQuestion] = useMutation(CREATE_QUESTION);
-  const [createOption] = useMutation(CREATE_OPTION);
+  const [questions, setQuestions] = useState<IQuestion[]>([]);
+  const [createQuestion] = useCreateQuestionMutation();
 
   const handleCreateQuestion = async () => {
     try {
       if (!surveyId) throw new Error('Survey ID not initialized');
 
       // for each question, create a question
-      questions.forEach(async ({ options, ...question }) => {
+      questions.forEach(async (q) => {
         const { data } = await createQuestion({
           variables: {
-            data: { ...question, options: [], survey: { connect: surveyId } },
+            data: {
+              ...q,
+              survey: surveyId,
+            },
           },
         });
-        const { createQuestion: newQuestion } = data;
-        if (newQuestion) {
+        if (data?.createQuestion) {
           addToast('Question created', {
             appearance: 'success',
             autoDismiss: true,
-            id: newQuestion.id,
+            id: data?.createQuestion._id,
           });
-          // if the question is an option, create the option
-          if (question.isOption && options) {
-            options.forEach(async (option, idx) => {
-              const { data } = await createOption({
-                variables: {
-                  data: {
-                    ...option,
-                    question: { connect: newQuestion._id },
-                    createdAt: getCreatedAt(),
-                  },
-                },
-              });
-              const { createOption: newOption } = data;
-              if (newOption) {
-                addToast(`Option ${idx + 1} created`, {
-                  appearance: 'success',
-                  autoDismiss: true,
-                });
-              }
-            });
-          }
         }
       });
 
@@ -106,9 +91,6 @@ export const CreateQuestionsForm: FC<CreateSurveyFormProps> = ({
             if (!values.title) throw new Error('Title is required');
             if (!values.isField && !values.isOption)
               throw new Error('both isField and isOption can not be selected');
-            // if (!values.isField || !values.isOption) {
-            //   throw new Error('Either field or option is required');
-            // }
             if (values.isField && !values.fieldPlaceholder) {
               throw new Error(
                 'Field placeholder is required as "Is field" is selected'
@@ -119,31 +101,21 @@ export const CreateQuestionsForm: FC<CreateSurveyFormProps> = ({
                 'Options are required as "Is Option" is selected'
               );
             }
-
-            const q: BaseQuestionType = {
+            const q: IQuestion = {
               title: values.title,
               isField: values.isField,
               isOption: values.isOption,
               fieldPlaceholder: values.isField
                 ? values.fieldPlaceholder
                 : undefined,
-              options: values.isOption
-                ? (values.options.map((o) => ({
-                    name: o.name,
-                    other: o.other ?? undefined,
-                  })) as BaseOptionType[] as any)
-                : [],
-              createdAt: getCreatedAt(),
+              options: values.isOption ? values.options : [],
             };
-
             setQuestions((s) => [...s, q]);
-
             addToast('Questions added to bank successfully', {
               appearance: 'success',
               autoDismiss: true,
             });
             setValues(defaultValues);
-            // handleNext();
           } catch (error) {
             addToast((error as Error).message, {
               appearance: 'error',
@@ -217,7 +189,7 @@ export const CreateQuestionsForm: FC<CreateSurveyFormProps> = ({
                 <label htmlFor="options" className="text-gray-700 text-lg mb-2">
                   Options
                 </label>
-                <div className="grid md:grid-cols-2">
+                <div className="grid">
                   {values.options.map((option, index) => (
                     <div key={index} className="flex mb-4">
                       <div className="mr-4">
@@ -234,21 +206,22 @@ export const CreateQuestionsForm: FC<CreateSurveyFormProps> = ({
                           placeholder={`Option ${index + 1}`}
                         />
                       </div>
-                      {index == 3 && (
-                        <div>
-                          <label
-                            htmlFor={`options[${index}].other`}
-                            className="text-gray-700 text-sm mb-2"
-                          >
-                            Other
-                          </label>
-                          <input
-                            {...getFieldProps(`options[${index}].other`)}
-                            type="text"
-                            className="border border-gray-300 p-2 w-full"
-                          />
-                        </div>
-                      )}
+                      {/* {index == 3 && ( */}
+                      <div>
+                        <label
+                          htmlFor={`options[${index}].other`}
+                          className="text-gray-700 text-sm mb-2"
+                        >
+                          Other
+                        </label>
+                        <input
+                          {...getFieldProps(`options[${index}].other`)}
+                          type="text"
+                          placeholder="optional*"
+                          className="border border-gray-300 p-2 w-full"
+                        />
+                      </div>
+                      {/* )} */}
                     </div>
                   ))}
                 </div>

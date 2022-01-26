@@ -5,8 +5,7 @@ import { MdSpaceDashboard, MdOutlineBugReport } from 'react-icons/md';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useSession, signOut } from 'next-auth/react';
-import { userStore } from '../lib/stores/users.store';
-import { UserType } from '../lib/types';
+import { userStore, UserType } from '../lib/stores/users.store';
 
 export const SideNavbar: FC = () => {
   const { authUser, logout, setUser } = userStore();
