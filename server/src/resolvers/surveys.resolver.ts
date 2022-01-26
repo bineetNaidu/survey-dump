@@ -17,12 +17,22 @@ class SurveyInput {
 export class SurveyResolver {
   @Query(() => Survey, { nullable: true })
   async getSurveyBySlug(@Arg('slug') slug: string) {
-    return await SurveyModel.findOne({ slug });
+    return await SurveyModel.findOne({ slug }).populate({
+      path: 'questions',
+      populate: {
+        path: 'options',
+      },
+    });
   }
 
   @Query(() => [Survey])
   async getSurveys(@Arg('creator') creator: string) {
-    return await SurveyModel.find({ creator });
+    return await SurveyModel.find({ creator }).populate({
+      path: 'questions',
+      populate: {
+        path: 'options',
+      },
+    });
   }
 
   @Mutation(() => Survey)

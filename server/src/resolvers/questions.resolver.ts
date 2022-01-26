@@ -47,7 +47,9 @@ export class QuestionResolver {
   async getQuestionsBySurvey(
     @Arg('survey') survey: string
   ): Promise<Question[]> {
-    return await QuestionModel.find({ survey });
+    return await QuestionModel.find({ survey }).populate({
+      path: 'options',
+    });
   }
 
   @Mutation(() => Question)
