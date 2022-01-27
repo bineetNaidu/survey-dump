@@ -18,12 +18,18 @@ import {
 import { SurveyModal } from '../../components/SurveyModal';
 
 const Dashboard: NextPage = () => {
-  const { surveys, setSurveys, removeSurvey } = surveyStore();
+  const {
+    surveys,
+    setSurveys,
+    removeSurvey,
+    setSelectedSurvey,
+    selectedSurvey,
+    clearSelectedSurvey,
+  } = surveyStore();
   const { authUser } = userStore();
   const { addToast } = useToasts();
   const [show, setShow] = useState(false);
   const [showDeleteSurveyPromt, setShowDeleteSurveyPromt] = useState(false);
-  const [selectedSurvey, setSelectedSurvey] = useState<null | Survey>(null);
   const [deleteSurveyId, setDeleteSurveyId] = useState<null | string>(null);
   const [showSurveyModal, setShowSurveyModal] = useState(false);
 
@@ -77,12 +83,12 @@ const Dashboard: NextPage = () => {
     setShowDeleteSurveyPromt(true);
   };
 
-  const handleShowSurveyModal = (survey: Survey) => {
-    setSelectedSurvey(survey);
+  const handleShowSurveyModal = (id: string) => {
+    setSelectedSurvey(id);
     setShowSurveyModal(true);
   };
   const handleCloseSurveyModal = () => {
-    setSelectedSurvey(null);
+    clearSelectedSurvey();
     setShowSurveyModal(false);
   };
 
@@ -100,7 +106,6 @@ const Dashboard: NextPage = () => {
                 handleCloseSurveyModal={handleCloseSurveyModal}
                 show={showSurveyModal}
                 setShow={setShowSurveyModal}
-                selectedSurvey={selectedSurvey}
               />
             )}
             <MultiStepModal show={show} setShow={setShow} />
@@ -181,7 +186,9 @@ const Dashboard: NextPage = () => {
                               </button>
                               <button
                                 className="h-8 w-8 text-sm text-blue-500 p-2 rounded border border-blue-500 hover:text-white hover:bg-green-500 hover:border-transparent transition-all"
-                                onClick={() => handleShowSurveyModal(survey)}
+                                onClick={() =>
+                                  handleShowSurveyModal(survey._id)
+                                }
                               >
                                 <FiExternalLink />
                               </button>

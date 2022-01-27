@@ -1,6 +1,5 @@
-import { FC, useState } from 'react';
+import { FC, useState, useEffect } from 'react';
 import {
-  Survey,
   useDeleteSurveyMutation,
   useUpdateSurveyStatusMutation,
 } from '../lib/graphql';
@@ -14,21 +13,21 @@ import { MdClose } from 'react-icons/md';
 interface SurveyModalProps {
   show: boolean;
   setShow: (b: boolean) => void;
-  selectedSurvey: Survey;
   handleCloseSurveyModal: () => void;
 }
 
 export const SurveyModal: FC<SurveyModalProps> = ({
   setShow,
-  selectedSurvey,
   show,
   handleCloseSurveyModal,
 }) => {
+  const { removeSurvey, updateSurvey, selectedSurvey } = useSurveyStore();
   const [showDeleteSurveyPromt, setShowDeleteSurveyPromt] = useState(false);
   const [updateSurveyStatus] = useUpdateSurveyStatusMutation();
   const [deleteSurvey] = useDeleteSurveyMutation();
   const { addToast } = useToasts();
-  const { removeSurvey, updateSurvey } = useSurveyStore();
+
+  if (!selectedSurvey) return null;
 
   const isDraft = selectedSurvey.status === 'DRAFT';
 
@@ -173,9 +172,11 @@ export const SurveyModal: FC<SurveyModalProps> = ({
           <div className="flex flex-col mt-4">
             <h2 className="text-2xl font-bold text-blue-500">Actions</h2>
             <div className="flex">
-              <button className="border border-blue-500 hover:border-transparent text-blue-500 hover:bg-blue-500 mx-1 hover:text-white font-bold py-2 px-4 transition-all duration-300 rounded">
-                <FaPencilAlt />
-              </button>
+              {isDraft && (
+                <button className="border border-blue-500 hover:border-transparent text-blue-500 hover:bg-blue-500 mx-1 hover:text-white font-bold py-2 px-4 transition-all duration-300 rounded">
+                  <FaPencilAlt />
+                </button>
+              )}
               <button
                 className="border border-red-500 hover:border-transparent text-red-500 hover:bg-red-500 mx-1 hover:text-white font-bold py-2 px-4 transition-all duration-300 rounded"
                 onClick={() => setShowDeleteSurveyPromt(true)}
