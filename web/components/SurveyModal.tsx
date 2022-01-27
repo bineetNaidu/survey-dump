@@ -28,7 +28,32 @@ export const SurveyModal: FC<SurveyModalProps> = ({
   const [updateSurveyStatus] = useUpdateSurveyStatusMutation();
   const [deleteSurvey] = useDeleteSurveyMutation();
   const { addToast } = useToasts();
-  const { removeSurvey } = useSurveyStore();
+  const { removeSurvey, updateSurvey } = useSurveyStore();
+
+  const isDraft = selectedSurvey.status === 'DRAFT';
+
+  const handleUpdateSurveyStatus = async (status: string) => {
+    const { data } = await updateSurveyStatus({
+      variables: {
+        updateSurveyStatusId: selectedSurvey._id,
+        status,
+      },
+    });
+    if (data?.updateSurveyStatus) {
+      updateSurvey(data.updateSurveyStatus._id, {
+        slug: data.updateSurveyStatus.slug,
+      });
+      addToast('Survey status updated', {
+        appearance: 'success',
+        autoDismiss: true,
+      });
+    } else {
+      addToast('Error updating survey status', {
+        appearance: 'error',
+        autoDismiss: true,
+      });
+    }
+  };
 
   const handleDeleteSurvey = async () => {
     const { data } = await deleteSurvey({
@@ -120,14 +145,28 @@ export const SurveyModal: FC<SurveyModalProps> = ({
         <div className="flex-[0.4]">
           <h2 className="text-2xl font-bold text-blue-500">
             Status:{' '}
-            <span className="bg-orange-400 p-1 text-white font-normal text-lg rounded-sm">
+            <span
+              className={`bg-${
+                isDraft ? 'orange' : 'green'
+              }-400 p-1 text-white font-normal text-lg rounded-sm`}
+            >
               {selectedSurvey.status}
             </span>
+            <button
+              className="text-xs text-gray-600 border border-gray-500 hover:bg-gray-400 hover:border-transparent hover:text-white font-bold transition-all duration-300 ml-4 py-1 px-2 rounded"
+              onClick={
+                isDraft
+                  ? () => handleUpdateSurveyStatus('ACTIVE')
+                  : () => handleUpdateSurveyStatus('DRAFT')
+              }
+            >
+              {isDraft ? 'Publish' : 'Draft'} it!
+            </button>
           </h2>
           <p className="text-gray-600 italic mt-3">
-            {selectedSurvey.status === 'DRAFT' &&
+            {isDraft &&
               'This survey is still a draft. You can edit it by clicking the pencil icon.'}
-            {selectedSurvey.status === 'Published' &&
+            {selectedSurvey.status === 'ACTIVE' &&
               'This survey is published. You can not edit it.'}
           </p>
 
