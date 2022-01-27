@@ -10,7 +10,12 @@ import { FaTrash } from 'react-icons/fa';
 import { FiExternalLink } from 'react-icons/fi';
 import { DeleteSurveyPromt } from '../../components/DeleteSurveyPromt';
 import { useToasts } from 'react-toast-notifications';
-import { useGetSurveysQuery, useDeleteSurveyMutation } from '../../lib/graphql';
+import {
+  useGetSurveysQuery,
+  useDeleteSurveyMutation,
+  Survey,
+} from '../../lib/graphql';
+import { SurveyModal } from '../../components/SurveyModal';
 
 const Dashboard: NextPage = () => {
   const { surveys, setSurveys, removeSurvey } = surveyStore();
@@ -18,7 +23,9 @@ const Dashboard: NextPage = () => {
   const { addToast } = useToasts();
   const [show, setShow] = useState(false);
   const [showDeleteSurveyPromt, setShowDeleteSurveyPromt] = useState(false);
+  const [selectedSurvey, setSelectedSurvey] = useState<null | Survey>(null);
   const [deleteSurveyId, setDeleteSurveyId] = useState<null | string>(null);
+  const [showSurveyModal, setShowSurveyModal] = useState(false);
 
   const [deleteSurvey] = useDeleteSurveyMutation();
 
@@ -70,6 +77,15 @@ const Dashboard: NextPage = () => {
     setShowDeleteSurveyPromt(true);
   };
 
+  const handleShowSurveyModal = (survey: Survey) => {
+    setSelectedSurvey(survey);
+    setShowSurveyModal(true);
+  };
+  const handleCloseSurveyModal = () => {
+    setSelectedSurvey(null);
+    setShowSurveyModal(false);
+  };
+
   return (
     <>
       <Head>
@@ -79,6 +95,14 @@ const Dashboard: NextPage = () => {
         <SideNavbar />
         {authUser && (
           <>
+            {selectedSurvey && (
+              <SurveyModal
+                handleCloseSurveyModal={handleCloseSurveyModal}
+                show={showSurveyModal}
+                setShow={setShowSurveyModal}
+                selectedSurvey={selectedSurvey}
+              />
+            )}
             <MultiStepModal show={show} setShow={setShow} />
             <DeleteSurveyPromt
               handleCancel={handleCloseDeleteSurveyPromt}
@@ -155,7 +179,10 @@ const Dashboard: NextPage = () => {
                               >
                                 <FaTrash />
                               </button>
-                              <button className="h-8 w-8 text-sm text-blue-500 p-2 rounded border border-blue-500 hover:text-white hover:bg-green-500 hover:border-transparent transition-all">
+                              <button
+                                className="h-8 w-8 text-sm text-blue-500 p-2 rounded border border-blue-500 hover:text-white hover:bg-green-500 hover:border-transparent transition-all"
+                                onClick={() => handleShowSurveyModal(survey)}
+                              >
                                 <FiExternalLink />
                               </button>
                             </div>
@@ -173,11 +200,11 @@ const Dashboard: NextPage = () => {
                     )}
                     <tr>
                       <td colSpan={6}>
-                        <div
-                          className="flex justify-center items-center mt-2"
-                          onClick={() => setShow(true)}
-                        >
-                          <button className="border-2 border-dashed border-gray-300 hover:border-blue-400 text-gray-400 hover:text-blue-400 transition-all py-2 px-4 rounded ">
+                        <div className="flex justify-center items-center mt-2">
+                          <button
+                            className="border-2 border-dashed border-gray-300 hover:border-blue-400 text-gray-400 hover:text-blue-400 transition-all py-2 px-4 rounded "
+                            onClick={() => setShow(true)}
+                          >
                             Add Survey
                           </button>
                         </div>
