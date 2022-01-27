@@ -6,7 +6,7 @@ interface ISurveyStore {
   setSurveys: (data: Survey[]) => void;
   addSurvey: (data: Survey) => void;
   removeSurvey: (id: string) => void;
-  updateSurvey: (id: string, data: Survey) => void;
+  updateSurvey: (id: string, data: Partial<Survey>) => void;
 }
 
 export const surveyStore = create<ISurveyStore>((set) => ({
@@ -25,7 +25,7 @@ export const surveyStore = create<ISurveyStore>((set) => ({
   updateSurvey: (id, data) => {
     set((state) => ({
       surveys: state.surveys.map((survey) =>
-        survey._id === id ? data : survey
+        survey._id === id ? { ...survey, ...data } : survey
       ),
     }));
   },
