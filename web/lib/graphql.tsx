@@ -231,7 +231,7 @@ export type UpdateSurveyStatusMutationVariables = Exact<{
 }>;
 
 
-export type UpdateSurveyStatusMutation = { __typename?: 'Mutation', updateSurveyStatus?: { __typename?: 'Survey', _id: string, slug: string, title: string, description: string, creator: string, status: string, questions: Array<{ __typename?: 'Question', _id: string, fieldPlaceholder?: string | null | undefined, isField: boolean, isOption: boolean, title: string, options: Array<{ __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined }>, survey: { __typename?: 'Survey', _id: string } }> } | null | undefined };
+export type UpdateSurveyStatusMutation = { __typename?: 'Mutation', updateSurveyStatus?: { __typename?: 'Survey', _id: string, slug: string, title: string, description: string, creator: string, status: string } | null | undefined };
 
 export type GetSurveyBySlugQueryVariables = Exact<{
   slug: Scalars['String'];
@@ -548,13 +548,9 @@ export const UpdateSurveyStatusDocument = gql`
     mutation UpdateSurveyStatus($status: String!, $updateSurveyStatusId: String!) {
   updateSurveyStatus(status: $status, id: $updateSurveyStatusId) {
     ...BaseSurvey
-    questions {
-      ...BaseQuestion
-    }
   }
 }
-    ${BaseSurveyFragmentDoc}
-${BaseQuestionFragmentDoc}`;
+    ${BaseSurveyFragmentDoc}`;
 export type UpdateSurveyStatusMutationFn = Apollo.MutationFunction<UpdateSurveyStatusMutation, UpdateSurveyStatusMutationVariables>;
 
 /**
