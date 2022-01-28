@@ -9,6 +9,7 @@ import { surveyStore as useSurveyStore } from '../lib/stores/survey.store';
 import { DeleteSurveyPromt } from './DeleteSurveyPromt';
 import { FaTrash, FaPencilAlt } from 'react-icons/fa';
 import { MdClose } from 'react-icons/md';
+import { EditableQuestionCard } from './EditableQuestionCard';
 
 interface SurveyModalProps {
   show: boolean;
@@ -104,39 +105,7 @@ export const SurveyModal: FC<SurveyModalProps> = ({
           </h2>
           <div className="flex flex-wrap mt-4">
             {selectedSurvey.questions.map((question, idx) => (
-              <div key={question._id} className="w-3/4 p-2 m-2">
-                <div className="bg-gray-200 p-2 rounded">
-                  <p className="text-sm font-semibold">
-                    Q{idx + 1}. {question.title}
-                  </p>
-                </div>
-
-                {question.isField && (
-                  <input
-                    type="text"
-                    placeholder={question.fieldPlaceholder!}
-                    className="w-full px-2 py-1 border border-gray-400 outline-none mt-2 rounded"
-                  />
-                )}
-                {question.isOption && (
-                  <div className="flex flex-col">
-                    {question.options.map((option) => (
-                      <div key={option._id}>
-                        {option.other ? (
-                          <input type="text" placeholder={option.other} />
-                        ) : (
-                          <div className="flex items-center">
-                            <input type="radio" value={option.name!} />
-                            <p className="text-sm font-semibold ml-2 my-1">
-                              {option.name!}
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <EditableQuestionCard key={question._id} q={question} idx={idx} />
             ))}
           </div>
         </div>
