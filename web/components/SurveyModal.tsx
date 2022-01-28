@@ -114,9 +114,9 @@ export const SurveyModal: FC<SurveyModalProps> = ({
           <h2 className="text-2xl font-bold text-blue-500">
             Status:{' '}
             <span
-              className={`bg-${
-                isDraft ? 'orange' : 'green'
-              }-400 p-1 text-white font-normal text-lg rounded-sm`}
+              className={`${
+                isDraft ? 'bg-orange-500' : 'bg-green-500'
+              } p-1 text-white font-normal text-lg rounded-sm`}
             >
               {selectedSurvey.status}
             </span>
