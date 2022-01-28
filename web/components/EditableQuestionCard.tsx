@@ -3,7 +3,10 @@ import { Question } from '../lib/graphql';
 import { FaPencilAlt, FaTrash } from 'react-icons/fa';
 import { BiLoaderCircle } from 'react-icons/bi';
 import { Formik, Form } from 'formik';
-import { useUpdateQuestionMutation } from '../lib/graphql';
+import {
+  useUpdateQuestionMutation,
+  useDeleteQuestionMutation,
+} from '../lib/graphql';
 import { useToasts } from 'react-toast-notifications';
 
 interface EditableQuestionCardProps {
@@ -17,7 +20,28 @@ export const EditableQuestionCard: FC<EditableQuestionCardProps> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [updateQuestion] = useUpdateQuestionMutation();
+  const [deleteQuestion, { loading: deleteQuestionLoading }] =
+    useDeleteQuestionMutation();
   const { addToast } = useToasts();
+
+  const handleDeleteQuestion = async () => {
+    const { data } = await deleteQuestion({
+      variables: {
+        deleteQuestionId: q._id,
+      },
+    });
+    if (data?.deleteQuestion) {
+      addToast('Question deleted', {
+        appearance: 'success',
+        autoDismiss: true,
+      });
+    } else {
+      addToast('Error deleting question', {
+        appearance: 'error',
+        autoDismiss: true,
+      });
+    }
+  };
 
   return (
     <div key={q._id} className="w-3/4 p-2 m-2 relative group">
@@ -69,9 +93,13 @@ export const EditableQuestionCard: FC<EditableQuestionCardProps> = ({
               <button
                 type="button"
                 className="text-xs text-gray-600 border border-gray-500 hover:bg-gray-400 hover:border-transparent hover:text-white font-bold transition-all duration-300 py-1 px-2 rounded mt-1"
-                onClick={() => setIsEditing(!isEditing)}
+                onClick={handleDeleteQuestion}
               >
-                <FaTrash />
+                {deleteQuestionLoading ? (
+                  <BiLoaderCircle className="animate-spin" />
+                ) : (
+                  <FaTrash />
+                )}
               </button>
             </div>
 
