@@ -66,7 +66,7 @@ export const CreateQuestionsForm: FC<CreateSurveyFormProps> = ({
           },
         });
         if (data?.createQuestion) {
-          addQuestion(surveyId, data.createQuestion as any);
+          addQuestion(surveyId, data.createQuestion);
           addToast('Question created', {
             appearance: 'success',
             autoDismiss: true,

@@ -93,11 +93,7 @@ export const EditableQuestionCard: FC<EditableQuestionCardProps> = ({
             },
           });
           if (data?.updateQuestion) {
-            updateSurveyQuestion(
-              q.survey._id,
-              q._id,
-              data.updateQuestion as any
-            );
+            updateSurveyQuestion(q.survey._id, q._id, data.updateQuestion);
             addToast('Question updated', {
               appearance: 'success',
               autoDismiss: true,

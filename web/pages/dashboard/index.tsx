@@ -10,12 +10,9 @@ import { FaTrash } from 'react-icons/fa';
 import { FiExternalLink } from 'react-icons/fi';
 import { DeleteSurveyPromt } from '../../components/DeleteSurveyPromt';
 import { useToasts } from 'react-toast-notifications';
-import {
-  useGetSurveysQuery,
-  useDeleteSurveyMutation,
-  Survey,
-} from '../../lib/graphql';
+import { useGetSurveysQuery, useDeleteSurveyMutation } from '../../lib/graphql';
 import { SurveyModal } from '../../components/SurveyModal';
+import type { BaseSurveyType } from '../../lib/types';
 
 const Dashboard: NextPage = () => {
   const {
@@ -43,7 +40,7 @@ const Dashboard: NextPage = () => {
 
   useEffect(() => {
     if (data) {
-      setSurveys(data.getSurveys as any);
+      setSurveys(data.getSurveys);
     }
   }, [data, setSurveys]);
 
@@ -83,7 +80,7 @@ const Dashboard: NextPage = () => {
     setShowDeleteSurveyPromt(true);
   };
 
-  const handleShowSurveyModal = (s: Survey) => {
+  const handleShowSurveyModal = (s: BaseSurveyType) => {
     setSelectedSurveyState(
       {
         _id: s._id,

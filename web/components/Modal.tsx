@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import Modal from 'react-overlays/Modal';
+import Modal, { RenderModalBackdropProps } from 'react-overlays/Modal';
 
 interface BaseModalProps {
   show: boolean;
@@ -7,7 +7,7 @@ interface BaseModalProps {
   containerClassName?: HTMLElement['className'];
 }
 
-const Backdrop: FC = () => {
+const Backdrop: FC<RenderModalBackdropProps> = () => {
   return (
     <div className="fixed inset-0 z-[8] bg-black opacity-75 transition-all "></div>
   );
@@ -19,7 +19,9 @@ export const BaseModal: FC<BaseModalProps> = ({
   children,
   containerClassName,
 }) => {
-  const renderBackdrop = (props: any) => <Backdrop {...props} />;
+  const renderBackdrop = (props: RenderModalBackdropProps) => (
+    <Backdrop {...props} />
+  );
 
   return (
     <Modal

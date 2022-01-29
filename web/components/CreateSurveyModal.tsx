@@ -35,8 +35,8 @@ export const CreateSurveyForm: FC<CreateSurveyFormProps> = ({
       });
 
       if (data?.createSurvey) {
-        addSurvey(data?.createSurvey as any);
-        setSurveyId(data?.createSurvey._id);
+        addSurvey(data.createSurvey);
+        setSurveyId(data.createSurvey._id);
       }
     } catch (e) {
       throw new Error((e as Error).message);
