@@ -19,6 +19,19 @@ const bootstrap = async () => {
       validate: false,
       resolvers: [SurveyResolver, QuestionResolver, OptionResolver],
     }),
+    formatError: (err) => {
+      return {
+        message: err.message,
+      };
+    },
+    cors: {
+      origin:
+        process.env.NODE_ENV === 'production'
+          ? process.env.NEXT_PUBLIC_URL
+          : '*',
+      methods: 'POST',
+      credentials: true,
+    },
   });
 
   server.listen().then(({ url }) => {
