@@ -39,19 +39,26 @@ export const EditableQuestionCard: FC<EditableQuestionCardProps> = ({
   } = useSurveyStore();
 
   const handleDeleteQuestion = async () => {
-    const { data } = await deleteQuestion({
-      variables: {
-        deleteQuestionId: q._id,
-      },
-    });
-    if (data?.deleteQuestion) {
-      removeSurveyQuestion(q.survey._id, q._id);
-      addToast('Question deleted', {
-        appearance: 'success',
-        autoDismiss: true,
+    try {
+      const { data } = await deleteQuestion({
+        variables: {
+          deleteQuestionId: q._id,
+        },
       });
-    } else {
-      addToast('Error deleting question', {
+      if (data?.deleteQuestion) {
+        removeSurveyQuestion(q.survey._id, q._id);
+        addToast('Question deleted', {
+          appearance: 'success',
+          autoDismiss: true,
+        });
+      } else {
+        addToast('Error deleting question', {
+          appearance: 'error',
+          autoDismiss: true,
+        });
+      }
+    } catch (error) {
+      addToast((error as Error).message, {
         appearance: 'error',
         autoDismiss: true,
       });
@@ -59,21 +66,28 @@ export const EditableQuestionCard: FC<EditableQuestionCardProps> = ({
   };
 
   const handleDeleteOption = async (optionId: string) => {
-    const { data } = await deleteOption({
-      variables: {
-        deleteOptionId: optionId,
-        questionId: q._id,
-      },
-    });
-
-    if (data?.deleteOption) {
-      removeQuestionOption(q.survey._id, q._id, optionId);
-      addToast('Option deleted', {
-        appearance: 'success',
-        autoDismiss: true,
+    try {
+      const { data } = await deleteOption({
+        variables: {
+          deleteOptionId: optionId,
+          questionId: q._id,
+        },
       });
-    } else {
-      addToast('Error deleting option', {
+
+      if (data?.deleteOption) {
+        removeQuestionOption(q.survey._id, q._id, optionId);
+        addToast('Option deleted', {
+          appearance: 'success',
+          autoDismiss: true,
+        });
+      } else {
+        addToast('Error deleting option', {
+          appearance: 'error',
+          autoDismiss: true,
+        });
+      }
+    } catch (error) {
+      addToast((error as Error).message, {
         appearance: 'error',
         autoDismiss: true,
       });
@@ -85,25 +99,32 @@ export const EditableQuestionCard: FC<EditableQuestionCardProps> = ({
       <Formik
         initialValues={{}}
         onSubmit={async (values, { setSubmitting }) => {
-          setSubmitting(true);
-          const { data } = await updateQuestion({
-            variables: {
-              updateQuestionId: q._id,
-              data: {
-                ...values,
+          try {
+            setSubmitting(true);
+            const { data } = await updateQuestion({
+              variables: {
+                updateQuestionId: q._id,
+                data: {
+                  ...values,
+                },
               },
-            },
-          });
-          if (data?.updateQuestion) {
-            updateSurveyQuestion(q.survey._id, q._id, data.updateQuestion);
-            addToast('Question updated', {
-              appearance: 'success',
-              autoDismiss: true,
             });
-            setIsEditing(false);
-            setSubmitting(false);
-          } else {
-            addToast('Error updating question', {
+            if (data?.updateQuestion) {
+              updateSurveyQuestion(q.survey._id, q._id, data.updateQuestion);
+              addToast('Question updated', {
+                appearance: 'success',
+                autoDismiss: true,
+              });
+              setIsEditing(false);
+              setSubmitting(false);
+            } else {
+              addToast('Error updating question', {
+                appearance: 'error',
+                autoDismiss: true,
+              });
+            }
+          } catch (error) {
+            addToast((error as Error).message, {
               appearance: 'error',
               autoDismiss: true,
             });
@@ -217,30 +238,37 @@ export const EditableQuestionCard: FC<EditableQuestionCardProps> = ({
               <Formik
                 initialValues={{}}
                 onSubmit={async (values, { setSubmitting }) => {
-                  setSubmitting(true);
-                  const { data } = await updateOption({
-                    variables: {
-                      updateOptionId: option._id,
-                      data: {
-                        ...values,
+                  try {
+                    setSubmitting(true);
+                    const { data } = await updateOption({
+                      variables: {
+                        updateOptionId: option._id,
+                        data: {
+                          ...values,
+                        },
                       },
-                    },
-                  });
-                  if (data?.updateOption) {
-                    updateQuestionOption(
-                      q.survey._id,
-                      q._id,
-                      option._id,
-                      data.updateOption
-                    );
-                    addToast('Option updated', {
-                      appearance: 'success',
-                      autoDismiss: true,
                     });
-                    setIsEditing(false);
-                    setSubmitting(false);
-                  } else {
-                    addToast('Error updating option', {
+                    if (data?.updateOption) {
+                      updateQuestionOption(
+                        q.survey._id,
+                        q._id,
+                        option._id,
+                        data.updateOption
+                      );
+                      addToast('Option updated', {
+                        appearance: 'success',
+                        autoDismiss: true,
+                      });
+                      setIsEditing(false);
+                      setSubmitting(false);
+                    } else {
+                      addToast('Error updating option', {
+                        appearance: 'error',
+                        autoDismiss: true,
+                      });
+                    }
+                  } catch (error) {
+                    addToast((error as Error).message, {
                       appearance: 'error',
                       autoDismiss: true,
                     });
