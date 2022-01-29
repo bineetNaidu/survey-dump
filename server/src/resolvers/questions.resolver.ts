@@ -30,6 +30,8 @@ export class QuestionResolver {
     const survey = await SurveyModel.findById(data.survey);
 
     if (!survey) throw new Error('Survey not found');
+    if (survey.status === SurveyStatus.ACTIVE)
+      throw new Error('Cannot add question while survey is active');
 
     question.title = data.title;
     question.isOption = data.isOption;
