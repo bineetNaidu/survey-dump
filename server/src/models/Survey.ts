@@ -11,7 +11,6 @@ import { OptionModel } from './Option';
 
 export enum SurveyStatus {
   ACTIVE = 'ACTIVE',
-  INACTIVE = 'INACTIVE',
   DRAFT = 'DRAFT',
 }
 
