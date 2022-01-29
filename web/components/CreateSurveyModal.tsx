@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { Form, Formik } from 'formik';
 import { useToasts } from 'react-toast-notifications';
-import { surveyStore } from '../lib/stores/survey.store';
+import { useSurveyStore } from '../lib/stores/survey.store';
 import { userStore } from '../lib/stores/users.store';
 import { useCreateSurveyMutation } from '../lib/graphql';
 interface CreateSurveyFormProps {
@@ -16,7 +16,7 @@ export const CreateSurveyForm: FC<CreateSurveyFormProps> = ({
   const { addToast } = useToasts();
   const [createSurvey] = useCreateSurveyMutation();
   const { authUser } = userStore();
-  const { addSurvey } = surveyStore();
+  const { addSurvey } = useSurveyStore();
 
   const handleCreateSurveySubmit = async (
     title: string,

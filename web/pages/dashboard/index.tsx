@@ -3,7 +3,7 @@ import Head from 'next/head';
 import { NextPage } from 'next';
 import { SideNavbar } from '../../components/SideNavbar';
 import { withApollo } from '../../lib/nextApollo';
-import { surveyStore } from '../../lib/stores/survey.store';
+import { useSurveyStore } from '../../lib/stores/survey.store';
 import { userStore } from '../../lib/stores/users.store';
 import { MultiStepModal } from '../../components/MultiStepModal';
 import { FaTrash } from 'react-icons/fa';
@@ -22,10 +22,10 @@ const Dashboard: NextPage = () => {
     surveys,
     setSurveys,
     removeSurvey,
-    setSelectedSurvey,
     selectedSurvey,
-    clearSelectedSurvey,
-  } = surveyStore();
+    clearSelectedSurveyState,
+    setSelectedSurveyState,
+  } = useSurveyStore();
   const { authUser } = userStore();
   const { addToast } = useToasts();
   const [show, setShow] = useState(false);
@@ -83,12 +83,20 @@ const Dashboard: NextPage = () => {
     setShowDeleteSurveyPromt(true);
   };
 
-  const handleShowSurveyModal = (id: string) => {
-    setSelectedSurvey(id);
+  const handleShowSurveyModal = (s: Survey) => {
+    setSelectedSurveyState(
+      {
+        _id: s._id,
+        title: s.title,
+        description: s.description,
+        status: s.status,
+      },
+      s.questions
+    );
     setShowSurveyModal(true);
   };
   const handleCloseSurveyModal = () => {
-    clearSelectedSurvey();
+    clearSelectedSurveyState();
     setShowSurveyModal(false);
   };
 
@@ -186,9 +194,7 @@ const Dashboard: NextPage = () => {
                               </button>
                               <button
                                 className="h-8 w-8 text-sm text-blue-500 p-2 rounded border border-blue-500 hover:text-white hover:bg-green-500 hover:border-transparent transition-all"
-                                onClick={() =>
-                                  handleShowSurveyModal(survey._id)
-                                }
+                                onClick={() => handleShowSurveyModal(survey)}
                               >
                                 <FiExternalLink />
                               </button>

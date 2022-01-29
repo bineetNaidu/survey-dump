@@ -5,7 +5,7 @@ import {
 } from '../lib/graphql';
 import { BaseModal } from './Modal';
 import { useToasts } from 'react-toast-notifications';
-import { surveyStore as useSurveyStore } from '../lib/stores/survey.store';
+import { useSurveyStore } from '../lib/stores/survey.store';
 import { DeleteSurveyPromt } from './DeleteSurveyPromt';
 import { FaTrash, FaPencilAlt } from 'react-icons/fa';
 import { MdClose } from 'react-icons/md';
@@ -22,7 +22,12 @@ export const SurveyModal: FC<SurveyModalProps> = ({
   show,
   handleCloseSurveyModal,
 }) => {
-  const { removeSurvey, updateSurvey, selectedSurvey } = useSurveyStore();
+  const {
+    removeSurvey,
+    selectedSurvey,
+    surveyQuestions,
+    updateSelectedSurvey,
+  } = useSurveyStore();
   const [showDeleteSurveyPromt, setShowDeleteSurveyPromt] = useState(false);
   const [updateSurveyStatus] = useUpdateSurveyStatusMutation();
   const [deleteSurvey] = useDeleteSurveyMutation();
@@ -40,8 +45,8 @@ export const SurveyModal: FC<SurveyModalProps> = ({
       },
     });
     if (data?.updateSurveyStatus) {
-      updateSurvey(data.updateSurveyStatus._id, {
-        slug: data.updateSurveyStatus.slug,
+      updateSelectedSurvey(data.updateSurveyStatus._id, {
+        status: data.updateSurveyStatus.status,
       });
       addToast('Survey status updated', {
         appearance: 'success',
@@ -104,7 +109,7 @@ export const SurveyModal: FC<SurveyModalProps> = ({
             Questions <span className="text-sm text-blue-300">*preview</span>{' '}
           </h2>
           <div className="flex flex-wrap mt-4">
-            {selectedSurvey.questions.map((question, idx) => (
+            {surveyQuestions.map((question, idx) => (
               <EditableQuestionCard key={question._id} q={question} idx={idx} />
             ))}
           </div>

@@ -10,6 +10,7 @@ import {
   useDeleteOptionMutation,
 } from '../lib/graphql';
 import { useToasts } from 'react-toast-notifications';
+import { useSurveyStore } from '../lib/stores/survey.store';
 
 interface EditableQuestionCardProps {
   q: Question;
@@ -28,6 +29,12 @@ export const EditableQuestionCard: FC<EditableQuestionCardProps> = ({
   const [deleteOption, { loading: deleteOptionLoading }] =
     useDeleteOptionMutation();
   const { addToast } = useToasts();
+  const {
+    updateSurveyQuestion,
+    removeSurveyQuestion,
+    updateQuestionOption,
+    removeQuestionOption,
+  } = useSurveyStore();
 
   const handleDeleteQuestion = async () => {
     const { data } = await deleteQuestion({
@@ -36,6 +43,7 @@ export const EditableQuestionCard: FC<EditableQuestionCardProps> = ({
       },
     });
     if (data?.deleteQuestion) {
+      removeSurveyQuestion(q.survey._id, q._id);
       addToast('Question deleted', {
         appearance: 'success',
         autoDismiss: true,
@@ -57,7 +65,7 @@ export const EditableQuestionCard: FC<EditableQuestionCardProps> = ({
     });
 
     if (data?.deleteOption) {
-      // delete it from store
+      removeQuestionOption(q.survey._id, q._id, optionId);
       addToast('Option deleted', {
         appearance: 'success',
         autoDismiss: true,
@@ -85,7 +93,11 @@ export const EditableQuestionCard: FC<EditableQuestionCardProps> = ({
             },
           });
           if (data?.updateQuestion) {
-            // **update the question in store**
+            updateSurveyQuestion(
+              q.survey._id,
+              q._id,
+              data.updateQuestion as any
+            );
             addToast('Question updated', {
               appearance: 'success',
               autoDismiss: true,
@@ -213,7 +225,12 @@ export const EditableQuestionCard: FC<EditableQuestionCardProps> = ({
                     },
                   });
                   if (data?.updateOption) {
-                    // **update the option in store**
+                    updateQuestionOption(
+                      q.survey._id,
+                      q._id,
+                      option._id,
+                      data.updateOption
+                    );
                     addToast('Option updated', {
                       appearance: 'success',
                       autoDismiss: true,
