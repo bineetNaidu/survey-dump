@@ -1,32 +1,32 @@
 import create from 'zustand';
-import { Survey, Question, Option } from '../graphql';
-
-type SelectedSurveyType = Pick<
-  Survey,
-  '_id' | 'title' | 'description' | 'status'
->;
+import { Option } from '../graphql';
+import type {
+  BaseQuestionType,
+  BaseSurveyType,
+  SelectedSurveyType,
+} from '../types';
 
 interface ISurveyStore {
-  surveys: Survey[];
+  surveys: BaseSurveyType[];
   selectedSurvey: SelectedSurveyType | null;
-  surveyQuestions: Question[];
+  surveyQuestions: BaseQuestionType[];
 
-  setSurveys: (data: Survey[]) => void;
-  addSurvey: (data: Survey) => void;
+  setSurveys: (data: BaseSurveyType[]) => void;
+  addSurvey: (data: BaseSurveyType) => void;
   removeSurvey: (id: string) => void;
-  addQuestion: (surveyId: string, data: Question) => void;
+  addQuestion: (surveyId: string, data: BaseQuestionType) => void;
 
   setSelectedSurveyState: (
     survey: SelectedSurveyType,
-    surveyQuestions: Question[]
+    surveyQuestions: BaseQuestionType[]
   ) => void;
   clearSelectedSurveyState: () => void;
-  addSurveyQuestion: (surveyId: string, question: Question) => void;
+  addSurveyQuestion: (surveyId: string, question: BaseQuestionType) => void;
   removeSurveyQuestion: (surveyId: string, qid: string) => void;
   updateSurveyQuestion: (
     surveyId: string,
     qid: string,
-    data: Partial<Question>
+    data: Partial<BaseQuestionType>
   ) => void;
   updateSelectedSurvey: (
     surveyId: string,
