@@ -1,4 +1,4 @@
-import { FC, useState, useEffect } from 'react';
+import { FC, useState } from 'react';
 import {
   useDeleteSurveyMutation,
   useUpdateSurveyStatusMutation,
@@ -7,9 +7,10 @@ import { BaseModal } from './Modal';
 import { useToasts } from 'react-toast-notifications';
 import { useSurveyStore } from '../lib/stores/survey.store';
 import { DeleteSurveyPromt } from './DeleteSurveyPromt';
-import { FaTrash, FaPencilAlt } from 'react-icons/fa';
+import { FaTrash, FaPencilAlt, FaPlus } from 'react-icons/fa';
 import { MdClose } from 'react-icons/md';
 import { EditableQuestionCard } from './EditableQuestionCard';
+import { AddMoreQuestionModal } from './AddMoreQuestionModal';
 
 interface SurveyModalProps {
   show: boolean;
@@ -32,6 +33,8 @@ export const SurveyModal: FC<SurveyModalProps> = ({
   const [updateSurveyStatus] = useUpdateSurveyStatusMutation();
   const [deleteSurvey] = useDeleteSurveyMutation();
   const { addToast } = useToasts();
+  const [showAddMoreQuestionsModal, setShowAddMoreQuestionsModal] =
+    useState(false);
 
   if (!selectedSurvey) return null;
 
@@ -80,6 +83,7 @@ export const SurveyModal: FC<SurveyModalProps> = ({
       });
     }
   };
+
   return (
     <BaseModal
       show={show}
@@ -91,6 +95,11 @@ export const SurveyModal: FC<SurveyModalProps> = ({
         setShow={setShowDeleteSurveyPromt}
         handleDelete={handleDeleteSurvey}
         handleCancel={() => setShowDeleteSurveyPromt(false)}
+      />
+      <AddMoreQuestionModal
+        show={showAddMoreQuestionsModal}
+        setShow={setShowAddMoreQuestionsModal}
+        surveyId={selectedSurvey._id}
       />
       <div className="text-center">
         <h1 className="text-5xl font-bold text-blue-500">
@@ -117,6 +126,15 @@ export const SurveyModal: FC<SurveyModalProps> = ({
                 isDraft={isDraft}
               />
             ))}
+            <button
+              className="w-3/4 py-2 mx-2 text-sm text-gray-500 border border-dashed border-gray-500 rounded transition-all hover:text-gray-700 hover:border-gray-700"
+              onClick={() => setShowAddMoreQuestionsModal(true)}
+            >
+              <span className="flex justify-center items-center">
+                <FaPlus className="mr-1" />
+                Add more questions
+              </span>
+            </button>
           </div>
         </div>
         <hr className="border-2 my-4 border-dashed md:hidden block" />
