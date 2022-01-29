@@ -1,7 +1,7 @@
 import { Resolver, Query, Mutation, Arg } from 'type-graphql';
 import { Question, QuestionModel } from '../models/Question';
 import { OptionModel } from '../models/Option';
-import { SurveyModel } from '../models/Survey';
+import { Survey, SurveyModel, SurveyStatus } from '../models/Survey';
 import { QuestionInput, UpdateQuestionInput } from './dto/questions.dto';
 
 @Resolver()
@@ -62,8 +62,13 @@ export class QuestionResolver {
     @Arg('id') id: string,
     @Arg('data') data: UpdateQuestionInput
   ): Promise<Question | null> {
-    const q = await QuestionModel.findById(id);
+    const q = await QuestionModel.findById(id).populate({
+      path: 'survey',
+    });
     if (!q) return null;
+    if ((q.survey as Survey).status === SurveyStatus.ACTIVE) {
+      throw new Error('Cannot update question while survey is active');
+    }
     if (data.title) q.title = data.title;
     if (q.isField && data.fieldPlaceholder)
       q.fieldPlaceholder = data.fieldPlaceholder;

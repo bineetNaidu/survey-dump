@@ -57,6 +57,11 @@ export class SurveyResolver {
     if (!survey) {
       return null;
     }
+    if (survey.questions.length === 0) {
+      throw new Error(
+        'Survey must have at least one question before you publish it.'
+      );
+    }
     survey.status = status;
     await survey.save();
     return survey;

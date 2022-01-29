@@ -5,8 +5,9 @@ import {
   prop as Property,
   Ref,
   post,
+  pre,
 } from '@typegoose/typegoose';
-import { Survey } from './Survey';
+import { Survey, SurveyModel, SurveyStatus } from './Survey';
 import { Option, OptionModel } from './Option';
 
 @post<Question>('remove', async (question) => {
@@ -16,6 +17,17 @@ import { Option, OptionModel } from './Option';
         $in: question.options,
       },
     });
+  }
+})
+@pre<Question>('remove', async function (next) {
+  try {
+    const survey = await SurveyModel.findById(this.survey?._id);
+    if (survey && survey.status === SurveyStatus.ACTIVE) {
+      throw new Error('Cannot delete question while survey is active');
+    }
+    next();
+  } catch (error) {
+    next(error);
   }
 })
 @ObjectType()
