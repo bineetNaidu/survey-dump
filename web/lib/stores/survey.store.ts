@@ -14,6 +14,7 @@ interface ISurveyStore {
   setSurveys: (data: Survey[]) => void;
   addSurvey: (data: Survey) => void;
   removeSurvey: (id: string) => void;
+  addQuestion: (surveyId: string, data: Question) => void;
 
   setSelectedSurveyState: (
     survey: SelectedSurveyType,
@@ -178,6 +179,18 @@ export const useSurveyStore = create<ISurveyStore>((set) => ({
                   : question
               ),
             }
+          : survey
+      ),
+    }));
+  },
+  addQuestion: (sid, data) => {
+    set((state) => ({
+      surveyQuestions: state.selectedSurvey
+        ? [...state.surveyQuestions, data]
+        : [],
+      surveys: state.surveys.map((survey) =>
+        survey._id === sid
+          ? { ...survey, questions: [...survey.questions, data] }
           : survey
       ),
     }));

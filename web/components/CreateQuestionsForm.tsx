@@ -6,6 +6,7 @@ import {
   Question,
   useCreateQuestionMutation,
 } from '../lib/graphql';
+import { useSurveyStore } from '../lib/stores/survey.store';
 
 interface IQuestion extends Omit<Question, '_id' | 'options' | 'survey'> {
   options: QuestionOptionInput[];
@@ -48,6 +49,7 @@ export const CreateQuestionsForm: FC<CreateSurveyFormProps> = ({
   const { addToast } = useToasts();
   const [questions, setQuestions] = useState<IQuestion[]>([]);
   const [createQuestion] = useCreateQuestionMutation();
+  const { addQuestion } = useSurveyStore();
 
   const handleCreateQuestion = async () => {
     try {
@@ -64,6 +66,7 @@ export const CreateQuestionsForm: FC<CreateSurveyFormProps> = ({
           },
         });
         if (data?.createQuestion) {
+          addQuestion(surveyId, data.createQuestion as any);
           addToast('Question created', {
             appearance: 'success',
             autoDismiss: true,
