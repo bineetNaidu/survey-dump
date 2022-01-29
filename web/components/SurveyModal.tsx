@@ -45,7 +45,7 @@ export const SurveyModal: FC<SurveyModalProps> = ({
       },
     });
     if (data?.updateSurveyStatus) {
-      updateSelectedSurvey(data.updateSurveyStatus._id, {
+      updateSelectedSurvey(selectedSurvey._id, {
         status: data.updateSurveyStatus.status,
       });
       addToast('Survey status updated', {
@@ -110,7 +110,12 @@ export const SurveyModal: FC<SurveyModalProps> = ({
           </h2>
           <div className="flex flex-wrap mt-4">
             {surveyQuestions.map((question, idx) => (
-              <EditableQuestionCard key={question._id} q={question} idx={idx} />
+              <EditableQuestionCard
+                key={question._id}
+                q={question}
+                idx={idx}
+                isDraft={isDraft}
+              />
             ))}
           </div>
         </div>

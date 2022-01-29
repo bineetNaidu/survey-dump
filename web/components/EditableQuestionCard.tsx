@@ -1,5 +1,4 @@
 import { FC, useState } from 'react';
-import { Question } from '../lib/graphql';
 import { FaPencilAlt, FaTrash } from 'react-icons/fa';
 import { BiLoaderCircle } from 'react-icons/bi';
 import { Formik, Form } from 'formik';
@@ -11,15 +10,18 @@ import {
 } from '../lib/graphql';
 import { useToasts } from 'react-toast-notifications';
 import { useSurveyStore } from '../lib/stores/survey.store';
+import { BaseQuestionType } from '../lib/types';
 
 interface EditableQuestionCardProps {
-  q: Question;
+  q: BaseQuestionType;
+  isDraft: boolean;
   idx: number;
 }
 
 export const EditableQuestionCard: FC<EditableQuestionCardProps> = ({
   q,
   idx,
+  isDraft,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [updateQuestion] = useUpdateQuestionMutation();
@@ -110,33 +112,37 @@ export const EditableQuestionCard: FC<EditableQuestionCardProps> = ({
       >
         {({ getFieldProps, isSubmitting, handleSubmit }) => (
           <Form>
-            <div
-              className={`absolute top-[30%] left-8 -rotate-90 opacity-0 ${
-                isEditing && 'group-hover:opacity-100 group-hover:-left-8'
-              } flex flex-col transition-all duration-500 translate-y-2 -translate-x-5`}
-            >
-              <p className="bg-green-400 p-1 text-white">EDITING!</p>
-            </div>
-            <div className="absolute top-7 right-8 opacity-0 group-hover:opacity-100 group-hover:-right-8 flex flex-col transition-all duration-500">
-              <button
-                type="button"
-                className="text-xs text-gray-600 border border-gray-500 hover:bg-gray-400 hover:border-transparent hover:text-white font-bold transition-all duration-300 py-1 px-2 rounded"
-                onClick={() => setIsEditing(!isEditing)}
-              >
-                <FaPencilAlt />
-              </button>
-              <button
-                type="button"
-                className="text-xs text-gray-600 border border-gray-500 hover:bg-gray-400 hover:border-transparent hover:text-white font-bold transition-all duration-300 py-1 px-2 rounded mt-1"
-                onClick={handleDeleteQuestion}
-              >
-                {deleteQuestionLoading ? (
-                  <BiLoaderCircle className="animate-spin" />
-                ) : (
-                  <FaTrash />
-                )}
-              </button>
-            </div>
+            {isDraft && (
+              <>
+                <div
+                  className={`absolute top-[30%] left-8 -rotate-90 opacity-0 ${
+                    isEditing && 'group-hover:opacity-100 group-hover:-left-8'
+                  } flex flex-col transition-all duration-500 translate-y-2 -translate-x-5`}
+                >
+                  <p className="bg-green-400 p-1 text-white">EDITING!</p>
+                </div>
+                <div className="absolute top-7 right-8 opacity-0 group-hover:opacity-100 group-hover:-right-8 flex flex-col transition-all duration-500">
+                  <button
+                    type="button"
+                    className="text-xs text-gray-600 border border-gray-500 hover:bg-gray-400 hover:border-transparent hover:text-white font-bold transition-all duration-300 py-1 px-2 rounded"
+                    onClick={() => setIsEditing(!isEditing)}
+                  >
+                    <FaPencilAlt />
+                  </button>
+                  <button
+                    type="button"
+                    className="text-xs text-gray-600 border border-gray-500 hover:bg-gray-400 hover:border-transparent hover:text-white font-bold transition-all duration-300 py-1 px-2 rounded mt-1"
+                    onClick={handleDeleteQuestion}
+                  >
+                    {deleteQuestionLoading ? (
+                      <BiLoaderCircle className="animate-spin" />
+                    ) : (
+                      <FaTrash />
+                    )}
+                  </button>
+                </div>
+              </>
+            )}
 
             <div className="bg-gray-200 p-2 rounded">
               {isEditing ? (
