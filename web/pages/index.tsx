@@ -4,13 +4,13 @@ import { Navbar } from '../components/Navbar';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
-import { userStore } from '../lib/stores/users.store';
+import { useUserStore } from '../lib/stores/users.store';
 import { useToasts } from 'react-toast-notifications';
 
 const Home: NextPage = () => {
   const router = useRouter();
   const { status, data } = useSession();
-  const { setUser } = userStore();
+  const { setUser } = useUserStore();
   const { addToast } = useToasts();
 
   useEffect(() => {

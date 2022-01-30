@@ -1,4 +1,6 @@
-import create from 'zustand';
+import { useLayoutEffect } from 'react';
+import create, { StoreApi, UseBoundStore } from 'zustand';
+import createZustandContext from 'zustand/context';
 import { Option } from '../graphql';
 import type {
   BaseQuestionType,
@@ -45,154 +47,203 @@ interface ISurveyStore {
   ) => void;
 }
 
-export const useSurveyStore = create<ISurveyStore>((set) => ({
+type InitialStateType = Pick<
+  ISurveyStore,
+  'surveys' | 'selectedSurvey' | 'surveyQuestions'
+>;
+type SurveyStoreType = (
+  preloadedState?: InitialStateType | {}
+) => UseBoundStore<ISurveyStore, StoreApi<ISurveyStore>>;
+
+const initialState: InitialStateType = {
   surveys: [],
   selectedSurvey: null,
   surveyQuestions: [],
-  setSurveys: (data) => {
-    set({ surveys: data });
-  },
-  addSurvey: (data) => {
-    set((state) => ({ surveys: [...state.surveys, data] }));
-  },
-  removeSurvey: (id) => {
-    set((state) => ({
-      surveys: state.surveys.filter((survey) => survey._id !== id),
-      selectedSurvey: null,
-      surveyQuestions: [],
-    }));
-  },
+};
 
-  setSelectedSurveyState: (selectedSurvey, surveyQuestions) => {
-    set({ selectedSurvey, surveyQuestions });
-  },
-  clearSelectedSurveyState: () => {
-    set({ selectedSurvey: null, surveyQuestions: [] });
-  },
-  addSurveyQuestion: (sid, question) => {
-    set((state) => ({
-      surveyQuestions: [...state.surveyQuestions, question],
-      surveys: state.surveys.map((survey) =>
-        survey._id === sid
-          ? { ...survey, questions: [...survey.questions, question] }
-          : survey
-      ),
-    }));
-  },
-  removeSurveyQuestion: (sid, qid) => {
-    set((state) => ({
-      surveyQuestions: state.surveyQuestions.filter(
-        (question) => question._id !== qid
-      ),
-      surveys: state.surveys.map((survey) =>
-        survey._id === sid
-          ? {
-              ...survey,
-              questions: survey.questions.filter(
-                (question) => question._id !== qid
-              ),
-            }
-          : survey
-      ),
-    }));
-  },
-  updateSurveyQuestion: (sid, qid, data) => {
-    set((state) => ({
-      surveyQuestions: state.surveyQuestions.map((question) =>
-        question._id === qid ? { ...question, ...data } : question
-      ),
-      surveys: state.surveys.map((survey) =>
-        survey._id === sid
-          ? {
-              ...survey,
-              questions: survey.questions.map((question) =>
-                question._id === qid ? { ...question, ...data } : question
-              ),
-            }
-          : survey
-      ),
-    }));
-  },
-  updateSelectedSurvey: (sid, data) => {
-    set((state) => ({
-      selectedSurvey: state.selectedSurvey
-        ? { ...state.selectedSurvey, ...data }
-        : null,
-      surveys: state.surveys.map((survey) =>
-        survey._id === sid ? { ...survey, ...data } : survey
-      ),
-    }));
-  },
-  updateQuestionOption: (sid, qid, oid, data) => {
-    set((state) => ({
-      surveyQuestions: state.surveyQuestions.map((question) =>
-        question._id === qid
-          ? {
-              ...question,
-              options: question.options.map((option) =>
-                option._id === oid ? { ...option, ...data } : option
-              ),
-            }
-          : question
-      ),
-      surveys: state.surveys.map((survey) =>
-        survey._id === sid
-          ? {
-              ...survey,
-              questions: survey.questions.map((question) =>
-                question._id === qid
-                  ? {
-                      ...question,
-                      options: question.options.map((option) =>
-                        option._id === oid ? { ...option, ...data } : option
-                      ),
-                    }
-                  : question
-              ),
-            }
-          : survey
-      ),
-    }));
-  },
-  removeQuestionOption: (sid, qid, oid) => {
-    set((state) => ({
-      surveyQuestions: state.surveyQuestions.map((question) =>
-        question._id === qid
-          ? {
-              ...question,
-              options: question.options.filter((option) => option._id !== oid),
-            }
-          : question
-      ),
-      surveys: state.surveys.map((survey) =>
-        survey._id === sid
-          ? {
-              ...survey,
-              questions: survey.questions.map((question) =>
-                question._id === qid
-                  ? {
-                      ...question,
-                      options: question.options.filter(
-                        (option) => option._id !== oid
-                      ),
-                    }
-                  : question
-              ),
-            }
-          : survey
-      ),
-    }));
-  },
-  addQuestion: (sid, data) => {
-    set((state) => ({
-      surveyQuestions: state.selectedSurvey
-        ? [...state.surveyQuestions, data]
-        : [],
-      surveys: state.surveys.map((survey) =>
-        survey._id === sid
-          ? { ...survey, questions: [...survey.questions, data] }
-          : survey
-      ),
-    }));
-  },
-}));
+let store: ReturnType<SurveyStoreType> | undefined;
+
+const zustandContext = createZustandContext<ISurveyStore>();
+export const useSurveyStore = zustandContext.useStore;
+export const SurveyStoreProvider = zustandContext.Provider;
+
+export const initializeStore: SurveyStoreType = (
+  preloadedState: InitialStateType | {} = {}
+) =>
+  create<ISurveyStore>((set) => ({
+    ...initialState,
+    ...preloadedState,
+    setSurveys: (data) => {
+      set({ surveys: data });
+    },
+    addSurvey: (data) => {
+      set((state) => ({ surveys: [...state.surveys, data] }));
+    },
+    removeSurvey: (id) => {
+      set((state) => ({
+        surveys: state.surveys.filter((survey) => survey._id !== id),
+        selectedSurvey: null,
+        surveyQuestions: [],
+      }));
+    },
+
+    setSelectedSurveyState: (selectedSurvey, surveyQuestions) => {
+      set({ selectedSurvey, surveyQuestions });
+    },
+    clearSelectedSurveyState: () => {
+      set({ selectedSurvey: null, surveyQuestions: [] });
+    },
+    addSurveyQuestion: (sid, question) => {
+      set((state) => ({
+        surveyQuestions: [...state.surveyQuestions, question],
+        surveys: state.surveys.map((survey) =>
+          survey._id === sid
+            ? { ...survey, questions: [...survey.questions, question] }
+            : survey
+        ),
+      }));
+    },
+    removeSurveyQuestion: (sid, qid) => {
+      set((state) => ({
+        surveyQuestions: state.surveyQuestions.filter(
+          (question) => question._id !== qid
+        ),
+        surveys: state.surveys.map((survey) =>
+          survey._id === sid
+            ? {
+                ...survey,
+                questions: survey.questions.filter(
+                  (question) => question._id !== qid
+                ),
+              }
+            : survey
+        ),
+      }));
+    },
+    updateSurveyQuestion: (sid, qid, data) => {
+      set((state) => ({
+        surveyQuestions: state.surveyQuestions.map((question) =>
+          question._id === qid ? { ...question, ...data } : question
+        ),
+        surveys: state.surveys.map((survey) =>
+          survey._id === sid
+            ? {
+                ...survey,
+                questions: survey.questions.map((question) =>
+                  question._id === qid ? { ...question, ...data } : question
+                ),
+              }
+            : survey
+        ),
+      }));
+    },
+    updateSelectedSurvey: (sid, data) => {
+      set((state) => ({
+        selectedSurvey: state.selectedSurvey
+          ? { ...state.selectedSurvey, ...data }
+          : null,
+        surveys: state.surveys.map((survey) =>
+          survey._id === sid ? { ...survey, ...data } : survey
+        ),
+      }));
+    },
+    updateQuestionOption: (sid, qid, oid, data) => {
+      set((state) => ({
+        surveyQuestions: state.surveyQuestions.map((question) =>
+          question._id === qid
+            ? {
+                ...question,
+                options: question.options.map((option) =>
+                  option._id === oid ? { ...option, ...data } : option
+                ),
+              }
+            : question
+        ),
+        surveys: state.surveys.map((survey) =>
+          survey._id === sid
+            ? {
+                ...survey,
+                questions: survey.questions.map((question) =>
+                  question._id === qid
+                    ? {
+                        ...question,
+                        options: question.options.map((option) =>
+                          option._id === oid ? { ...option, ...data } : option
+                        ),
+                      }
+                    : question
+                ),
+              }
+            : survey
+        ),
+      }));
+    },
+    removeQuestionOption: (sid, qid, oid) => {
+      set((state) => ({
+        surveyQuestions: state.surveyQuestions.map((question) =>
+          question._id === qid
+            ? {
+                ...question,
+                options: question.options.filter(
+                  (option) => option._id !== oid
+                ),
+              }
+            : question
+        ),
+        surveys: state.surveys.map((survey) =>
+          survey._id === sid
+            ? {
+                ...survey,
+                questions: survey.questions.map((question) =>
+                  question._id === qid
+                    ? {
+                        ...question,
+                        options: question.options.filter(
+                          (option) => option._id !== oid
+                        ),
+                      }
+                    : question
+                ),
+              }
+            : survey
+        ),
+      }));
+    },
+    addQuestion: (sid, data) => {
+      set((state) => ({
+        surveyQuestions: state.selectedSurvey
+          ? [...state.surveyQuestions, data]
+          : [],
+        surveys: state.surveys.map((survey) =>
+          survey._id === sid
+            ? { ...survey, questions: [...survey.questions, data] }
+            : survey
+        ),
+      }));
+    },
+  }));
+
+export function useCreateSurveyStore(initialState: InitialStateType) {
+  // For SSR & SSG, always use a new store.
+  if (typeof window === 'undefined') {
+    return () => initializeStore(initialState);
+  }
+
+  // For CSR, always re-use same store.
+  store = store ?? initializeStore(initialState);
+  // And if initialState changes, then merge states in the next render cycle.
+  //
+  // eslint complaining "React Hooks must be called in the exact same order in every component render"
+  // is ignorable as this code runs in same order in a given environment
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useLayoutEffect(() => {
+    if (initialState && store) {
+      store.setState({
+        ...store.getState(),
+        ...initialState,
+      });
+    }
+  }, [initialState]);
+
+  return () => store;
+}
