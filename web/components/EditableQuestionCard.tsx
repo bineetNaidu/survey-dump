@@ -277,80 +277,85 @@ export const EditableQuestionCard: FC<EditableQuestionCardProps> = ({
               >
                 {({ handleSubmit, getFieldProps, isSubmitting }) => (
                   <Form>
-                    {option.other ? (
-                      <>
-                        {isEditing ? (
-                          <input
-                            type="text"
-                            defaultValue={option.other}
-                            {...getFieldProps('other')}
-                            placeholder="to update type or leave it blank"
-                            disabled={!isEditing}
-                            className={`w-full px-2 py-1 border border-dashed border-gray-400 outline-none mt-2 rounded`}
-                          />
-                        ) : (
-                          <input
-                            type="text"
-                            disabled
-                            placeholder={option.other}
-                          />
-                        )}
-                      </>
-                    ) : (
-                      <div className="flex items-center">
-                        <input type="radio" disabled />
-                        {isEditing ? (
-                          <>
+                    <div className="flex items-center">
+                      {option.other ? (
+                        <>
+                          {isEditing ? (
                             <input
                               type="text"
-                              defaultValue={option.name!}
-                              {...getFieldProps('name')}
-                              placeholder="to update type or leave it blank"
+                              defaultValue={option.other}
+                              {...getFieldProps('other')}
                               disabled={!isEditing}
-                              className={`w-fit active:border-blue-400 px-2 py-1 text-sm border border-dashed border-gray-400 outline-none mt-2 rounded ${
-                                isEditing && 'ml-2'
-                              }`}
+                              className={`px-2 py-1 border border-dashed border-gray-400 outline-none mt-2 rounded ml-5`}
                             />
-                            <div>
-                              <button
-                                type="submit"
-                                onClick={async (e) => {
-                                  e.preventDefault();
-                                  await handleSubmit();
-                                }}
-                                disabled={isSubmitting}
-                                className="text-xs text-gray-600 border border-gray-500 hover:bg-gray-400 hover:border-transparent hover:text-white font-bold transition-all duration-300 py-1 px-2 rounded mt-2 mx-2 disabled:opacity-50"
-                              >
-                                {isSubmitting ? (
-                                  <BiLoaderCircle className="animate-spin" />
-                                ) : (
-                                  'update!'
-                                )}
-                              </button>
-                              <button
-                                type="button"
-                                onClick={async (e) => {
-                                  e.preventDefault();
-                                  await handleDeleteOption(option._id);
-                                }}
-                                disabled={isSubmitting}
-                                className="text-xs text-gray-600 border border-gray-500 hover:bg-gray-400 hover:border-transparent hover:text-white font-bold transition-all duration-300 py-1 px-2 rounded mt-2 disabled:opacity-50"
-                              >
-                                {deleteOptionLoading ? (
-                                  <BiLoaderCircle className="animate-spin" />
-                                ) : (
-                                  'delete!'
-                                )}
-                              </button>
-                            </div>
-                          </>
-                        ) : (
-                          <p className="text-sm font-semibold ml-2 my-1">
-                            {option.name!}
-                          </p>
-                        )}
-                      </div>
-                    )}
+                          ) : (
+                            <input
+                              type="text"
+                              disabled
+                              className="px-2 py-1 border border-gray-400 outline-none mt-2 rounded ml-5"
+                              placeholder={option.other}
+                              value=""
+                            />
+                          )}
+                        </>
+                      ) : (
+                        <div className="flex items-center">
+                          <input type="radio" disabled />
+                          {isEditing ? (
+                            <>
+                              <input
+                                type="text"
+                                defaultValue={option.name!}
+                                {...getFieldProps('name')}
+                                placeholder="to update type or leave it blank"
+                                disabled={!isEditing}
+                                className={`w-fit active:border-blue-400 px-2 py-1 text-sm border border-dashed border-gray-400 outline-none mt-2 rounded ${
+                                  isEditing && 'ml-2'
+                                }`}
+                              />
+                            </>
+                          ) : (
+                            <p className="text-sm font-semibold ml-2 my-1">
+                              {option.name!}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                      {isEditing && (
+                        <div className="flex">
+                          <button
+                            type="submit"
+                            onClick={async (e) => {
+                              e.preventDefault();
+                              await handleSubmit();
+                            }}
+                            disabled={isSubmitting && deleteOptionLoading}
+                            className="text-xs text-gray-600 border border-gray-500 hover:bg-gray-400 hover:border-transparent hover:text-white font-bold transition-all duration-300 py-1 px-2 rounded mt-2 mx-2 disabled:opacity-50"
+                          >
+                            {isSubmitting ? (
+                              <BiLoaderCircle className="animate-spin" />
+                            ) : (
+                              'update!'
+                            )}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={async (e) => {
+                              e.preventDefault();
+                              await handleDeleteOption(option._id);
+                            }}
+                            disabled={isSubmitting && deleteOptionLoading}
+                            className="text-xs text-gray-600 border border-gray-500 hover:bg-gray-400 hover:border-transparent hover:text-white font-bold transition-all duration-300 py-1 px-2 rounded mt-2 disabled:opacity-50"
+                          >
+                            {deleteOptionLoading ? (
+                              <BiLoaderCircle className="animate-spin" />
+                            ) : (
+                              'delete!'
+                            )}
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </Form>
                 )}
               </Formik>
