@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
-import { NextPage } from 'next';
+import { GetServerSideProps, NextPage } from 'next';
 import { SideNavbar } from '../../components/SideNavbar';
 import { withApollo } from '../../lib/nextApollo';
 import { useSurveyStore } from '../../lib/stores/survey.store';
-import { userStore } from '../../lib/stores/users.store';
+import { useUserStore, initializeStore } from '../../lib/stores/users.store';
 import { MultiStepModal } from '../../components/MultiStepModal';
 import { FaTrash } from 'react-icons/fa';
 import { FiExternalLink } from 'react-icons/fi';
@@ -13,6 +13,7 @@ import { useToasts } from 'react-toast-notifications';
 import { useGetSurveysQuery, useDeleteSurveyMutation } from '../../lib/graphql';
 import { SurveyModal } from '../../components/SurveyModal';
 import type { BaseSurveyType } from '../../lib/types';
+import { getSession } from 'next-auth/react';
 
 const Dashboard: NextPage = () => {
   const {
@@ -23,7 +24,7 @@ const Dashboard: NextPage = () => {
     clearSelectedSurveyState,
     setSelectedSurveyState,
   } = useSurveyStore();
-  const { authUser } = userStore();
+  const { authUser } = useUserStore();
   const { addToast } = useToasts();
   const [show, setShow] = useState(false);
   const [showDeleteSurveyPromt, setShowDeleteSurveyPromt] = useState(false);
@@ -34,7 +35,7 @@ const Dashboard: NextPage = () => {
 
   const { data } = useGetSurveysQuery({
     variables: {
-      creator: authUser?.email || '',
+      creator: authUser?.email!,
     },
   });
 
@@ -231,4 +232,20 @@ const Dashboard: NextPage = () => {
   );
 };
 
-export default withApollo({ ssr: false })(Dashboard);
+export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+  const userStore = initializeStore();
+  const session = await getSession({ req });
+  if (session?.user) {
+    userStore.getState().setUser(session.user as any);
+  }
+
+  return {
+    props: {
+      // the "stringify and then parse again" piece is required as next.js
+      // isn't able to serialize it to JSON properly
+      initialUserState: JSON.parse(JSON.stringify(userStore.getState())),
+    },
+  };
+};
+
+export default withApollo()(Dashboard);
