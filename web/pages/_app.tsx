@@ -5,6 +5,14 @@ import { ToastProvider } from 'react-toast-notifications';
 import { SessionProvider } from 'next-auth/react';
 import NProgress from 'nprogress';
 import Router from 'next/router';
+import {
+  useCreateSurveyStore,
+  SurveyStoreProvider,
+} from '../lib/stores/survey.store';
+import {
+  useCreateUserStore,
+  UserStoreProvider,
+} from '../lib/stores/users.store';
 
 NProgress.configure({ showSpinner: true });
 
@@ -21,15 +29,21 @@ Router.events.on('routeChangeError', () => {
 });
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const createSurveyStore = useCreateSurveyStore(pageProps.initialSurveyState);
+  const createUserStore = useCreateUserStore(pageProps.initialUserState);
   return (
     <>
-      <SessionProvider session={pageProps.session}>
-        <ToastProvider placement="top-right">
-          <div className="min-h-screen h-full">
-            <Component {...pageProps} />
-          </div>
-        </ToastProvider>
-      </SessionProvider>
+      <UserStoreProvider createStore={createUserStore}>
+        <SurveyStoreProvider createStore={createSurveyStore}>
+          <SessionProvider session={pageProps.session}>
+            <ToastProvider placement="top-right">
+              <div className="min-h-screen h-full">
+                <Component {...pageProps} />
+              </div>
+            </ToastProvider>
+          </SessionProvider>
+        </SurveyStoreProvider>
+      </UserStoreProvider>
     </>
   );
 }
