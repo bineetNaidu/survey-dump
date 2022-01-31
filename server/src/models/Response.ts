@@ -15,15 +15,15 @@ export class Response {
   user!: string;
 
   @Field(() => Survey)
-  @Property({ required: true, ref: Survey })
+  @Property({ required: true, ref: 'Survey' })
   survey!: Ref<Survey>;
 
   @Field(() => Question)
-  @Property({ required: true, ref: Question })
+  @Property({ required: true, ref: 'Question' })
   question!: Ref<Question>;
 
   @Field(() => Option, { nullable: true })
-  @Property({ ref: Option })
+  @Property({ ref: 'Option' })
   selectedOption?: Ref<Option>;
 
   @Field(() => String, { nullable: true })
