@@ -6,6 +6,7 @@ import { buildSchema } from 'type-graphql';
 import { SurveyResolver } from './resolvers/surveys.resolver';
 import { QuestionResolver } from './resolvers/questions.resolver';
 import { OptionResolver } from './resolvers/options.resolver';
+import { ResponseResolver } from './resolvers/responses.resolver';
 
 dotenv.config();
 const bootstrap = async () => {
@@ -17,7 +18,12 @@ const bootstrap = async () => {
   const server = new ApolloServer({
     schema: await buildSchema({
       validate: false,
-      resolvers: [SurveyResolver, QuestionResolver, OptionResolver],
+      resolvers: [
+        SurveyResolver,
+        QuestionResolver,
+        OptionResolver,
+        ResponseResolver,
+      ],
     }),
     formatError: (err) => {
       return {
