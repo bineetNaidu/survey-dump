@@ -7,6 +7,7 @@ import { SurveyResolver } from './resolvers/surveys.resolver';
 import { QuestionResolver } from './resolvers/questions.resolver';
 import { OptionResolver } from './resolvers/options.resolver';
 import { ResponseResolver } from './resolvers/responses.resolver';
+import { ReportResolver } from './resolvers/reports.resolver';
 
 dotenv.config();
 const bootstrap = async () => {
@@ -23,6 +24,7 @@ const bootstrap = async () => {
         QuestionResolver,
         OptionResolver,
         ResponseResolver,
+        ReportResolver,
       ],
     }),
     formatError: (err) => {
