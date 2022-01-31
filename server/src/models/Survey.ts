@@ -8,6 +8,7 @@ import {
 } from '@typegoose/typegoose';
 import { Question, QuestionModel } from './Question';
 import { OptionModel } from './Option';
+import { ResponseModel } from './Response';
 
 export enum SurveyStatus {
   ACTIVE = 'ACTIVE',
@@ -16,13 +17,11 @@ export enum SurveyStatus {
 
 @post<Survey>('remove', async (survey) => {
   if (survey) {
-    // first find the questions
     const questions = await QuestionModel.find({
       _id: {
         $in: survey.questions,
       },
     });
-    // then delete the options from the questions
     for (const question of questions) {
       await OptionModel.deleteMany({
         _id: {
@@ -30,12 +29,13 @@ export enum SurveyStatus {
         },
       });
     }
-    // then delete the questions
     await QuestionModel.deleteMany({
       _id: {
         $in: survey.questions,
       },
     });
+
+    await ResponseModel.deleteMany({}).where('survey').equals(survey._id);
   }
 })
 @ObjectType()

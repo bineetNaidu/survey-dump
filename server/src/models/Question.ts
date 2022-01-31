@@ -9,6 +9,7 @@ import {
 } from '@typegoose/typegoose';
 import { Survey, SurveyModel, SurveyStatus } from './Survey';
 import { Option, OptionModel } from './Option';
+import { ResponseModel } from './Response';
 
 @post<Question>('remove', async (question) => {
   if (question) {
@@ -17,6 +18,7 @@ import { Option, OptionModel } from './Option';
         $in: question.options,
       },
     });
+    await ResponseModel.deleteMany({}).where('question').equals(question._id);
   }
 })
 @pre<Question>('remove', async function (next) {
