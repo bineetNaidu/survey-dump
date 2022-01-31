@@ -1,0 +1,9 @@
+mutation CreateReport($data: ReportInput!) {
+  createReport(data: $data) {
+    _id
+    message
+    user
+    status
+    type
+  }
+}

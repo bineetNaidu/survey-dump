@@ -19,12 +19,15 @@ export type Mutation = {
   __typename?: 'Mutation';
   createOption: Option;
   createQuestion: Question;
+  createReport: Report;
+  createResponse: Response;
   createSurvey: Survey;
   deleteOption: Scalars['Boolean'];
   deleteQuestion: Scalars['Boolean'];
   deleteSurvey?: Maybe<Scalars['Boolean']>;
   updateOption?: Maybe<Option>;
   updateQuestion?: Maybe<Question>;
+  updateReportStatus?: Maybe<Report>;
   updateSurveyStatus?: Maybe<Survey>;
 };
 
@@ -37,6 +40,16 @@ export type MutationCreateOptionArgs = {
 
 export type MutationCreateQuestionArgs = {
   data: QuestionInput;
+};
+
+
+export type MutationCreateReportArgs = {
+  data: ReportInput;
+};
+
+
+export type MutationCreateResponseArgs = {
+  data: ResponseInput;
 };
 
 
@@ -73,6 +86,11 @@ export type MutationUpdateQuestionArgs = {
 };
 
 
+export type MutationUpdateReportStatusArgs = {
+  data: UpdateReportStatusInput;
+};
+
+
 export type MutationUpdateSurveyStatusArgs = {
   id: Scalars['String'];
   status: Scalars['String'];
@@ -92,14 +110,27 @@ export type OptionInput = {
 
 export type Query = {
   __typename?: 'Query';
+  findResponseBySurveySlug: Array<Response>;
   getQuestionsBySurvey: Array<Question>;
+  getReport?: Maybe<Report>;
+  getReports: Array<Report>;
   getSurveyBySlug?: Maybe<Survey>;
   getSurveys: Array<Survey>;
 };
 
 
+export type QueryFindResponseBySurveySlugArgs = {
+  slug: Scalars['String'];
+};
+
+
 export type QueryGetQuestionsBySurveyArgs = {
   survey: Scalars['String'];
+};
+
+
+export type QueryGetReportArgs = {
+  id: Scalars['String'];
 };
 
 
@@ -137,6 +168,38 @@ export type QuestionOptionInput = {
   other?: InputMaybe<Scalars['String']>;
 };
 
+export type Report = {
+  __typename?: 'Report';
+  _id: Scalars['String'];
+  message: Scalars['String'];
+  status: Scalars['String'];
+  type: Scalars['String'];
+  user: Scalars['String'];
+};
+
+export type ReportInput = {
+  message: Scalars['String'];
+  user: Scalars['String'];
+};
+
+export type Response = {
+  __typename?: 'Response';
+  _id: Scalars['String'];
+  question: Question;
+  selectedOption?: Maybe<Option>;
+  survey: Survey;
+  text?: Maybe<Scalars['String']>;
+  user: Scalars['String'];
+};
+
+export type ResponseInput = {
+  questionId: Scalars['String'];
+  selectedOptionId?: InputMaybe<Scalars['String']>;
+  surveyId: Scalars['String'];
+  text?: InputMaybe<Scalars['String']>;
+  user: Scalars['String'];
+};
+
 export type Survey = {
   __typename?: 'Survey';
   _id: Scalars['String'];
@@ -159,6 +222,11 @@ export type UpdateQuestionInput = {
   title?: InputMaybe<Scalars['String']>;
 };
 
+export type UpdateReportStatusInput = {
+  reportId: Scalars['String'];
+  status: Scalars['String'];
+};
+
 export type BaseOptionFragment = { __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined };
 
 export type BaseQuestionFragment = { __typename?: 'Question', _id: string, fieldPlaceholder?: string | null | undefined, isField: boolean, isOption: boolean, title: string, options: Array<{ __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined }>, survey: { __typename?: 'Survey', _id: string } };
@@ -179,6 +247,13 @@ export type CreateQuestionMutationVariables = Exact<{
 
 
 export type CreateQuestionMutation = { __typename?: 'Mutation', createQuestion: { __typename?: 'Question', _id: string, fieldPlaceholder?: string | null | undefined, isField: boolean, isOption: boolean, title: string, options: Array<{ __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined }>, survey: { __typename?: 'Survey', _id: string } } };
+
+export type CreateReportMutationVariables = Exact<{
+  data: ReportInput;
+}>;
+
+
+export type CreateReportMutation = { __typename?: 'Mutation', createReport: { __typename?: 'Report', _id: string, message: string, user: string, status: string, type: string } };
 
 export type CreateSurveyMutationVariables = Exact<{
   data: SurveyInput;
@@ -346,6 +421,43 @@ export function useCreateQuestionMutation(baseOptions?: Apollo.MutationHookOptio
 export type CreateQuestionMutationHookResult = ReturnType<typeof useCreateQuestionMutation>;
 export type CreateQuestionMutationResult = Apollo.MutationResult<CreateQuestionMutation>;
 export type CreateQuestionMutationOptions = Apollo.BaseMutationOptions<CreateQuestionMutation, CreateQuestionMutationVariables>;
+export const CreateReportDocument = gql`
+    mutation CreateReport($data: ReportInput!) {
+  createReport(data: $data) {
+    _id
+    message
+    user
+    status
+    type
+  }
+}
+    `;
+export type CreateReportMutationFn = Apollo.MutationFunction<CreateReportMutation, CreateReportMutationVariables>;
+
+/**
+ * __useCreateReportMutation__
+ *
+ * To run a mutation, you first call `useCreateReportMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateReportMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createReportMutation, { data, loading, error }] = useCreateReportMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useCreateReportMutation(baseOptions?: Apollo.MutationHookOptions<CreateReportMutation, CreateReportMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateReportMutation, CreateReportMutationVariables>(CreateReportDocument, options);
+      }
+export type CreateReportMutationHookResult = ReturnType<typeof useCreateReportMutation>;
+export type CreateReportMutationResult = Apollo.MutationResult<CreateReportMutation>;
+export type CreateReportMutationOptions = Apollo.BaseMutationOptions<CreateReportMutation, CreateReportMutationVariables>;
 export const CreateSurveyDocument = gql`
     mutation CreateSurvey($data: SurveyInput!) {
   createSurvey(data: $data) {
