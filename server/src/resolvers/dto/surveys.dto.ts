@@ -6,6 +6,4 @@ export class SurveyInput {
   title!: string;
   @Field()
   description!: string;
-  @Field()
-  creator!: string;
 }

@@ -1,12 +1,14 @@
-import { Resolver, Query, Mutation, Arg } from 'type-graphql';
+import { Resolver, Query, Mutation, Arg, UseMiddleware } from 'type-graphql';
 import { Question, QuestionModel } from '../models/Question';
 import { OptionModel } from '../models/Option';
 import { Survey, SurveyModel, SurveyStatus } from '../models/Survey';
 import { QuestionInput, UpdateQuestionInput } from './dto/questions.dto';
+import { isAuthenticated } from '../middlewares/isAuthenticated';
 
 @Resolver()
 export class QuestionResolver {
   @Query(() => [Question])
+  @UseMiddleware(isAuthenticated)
   async getQuestionsBySurvey(
     @Arg('survey') survey: string
   ): Promise<Question[]> {
@@ -16,6 +18,7 @@ export class QuestionResolver {
   }
 
   @Mutation(() => Question)
+  @UseMiddleware(isAuthenticated)
   async createQuestion(@Arg('data') data: QuestionInput): Promise<Question> {
     if (!data.isOption && !data.isField)
       throw new Error('Question must be either an option or a field');
@@ -60,6 +63,7 @@ export class QuestionResolver {
   }
 
   @Mutation(() => Question, { nullable: true })
+  @UseMiddleware(isAuthenticated)
   async updateQuestion(
     @Arg('id') id: string,
     @Arg('data') data: UpdateQuestionInput
@@ -79,6 +83,7 @@ export class QuestionResolver {
   }
 
   @Mutation(() => Boolean)
+  @UseMiddleware(isAuthenticated)
   async deleteQuestion(@Arg('id') id: string): Promise<boolean> {
     const question = await QuestionModel.findById(id);
     if (!question) return false;
