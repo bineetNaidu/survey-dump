@@ -9,6 +9,7 @@ import {
 import { Question, QuestionModel } from './Question';
 import { OptionModel } from './Option';
 import { ResponseModel } from './Response';
+import { User } from './User';
 
 export enum SurveyStatus {
   ACTIVE = 'ACTIVE',
@@ -59,9 +60,9 @@ export class Survey {
   @Property({ enum: SurveyStatus, default: SurveyStatus.DRAFT })
   status: SurveyStatus;
 
-  @Field()
-  @Property({ required: true })
-  creator!: string;
+  @Field(() => User)
+  @Property({ required: true, ref: User })
+  creator!: Ref<User>;
 
   @Field(() => [Question])
   @Property({ ref: () => Question, default: [] })

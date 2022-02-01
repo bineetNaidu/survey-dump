@@ -1,7 +1,18 @@
 import { Survey, SurveyModel, SurveyStatus } from '../models/Survey';
-import { Arg, Query, Resolver, Mutation } from 'type-graphql';
+import {
+  Arg,
+  Query,
+  Resolver,
+  Mutation,
+  Ctx,
+  UseMiddleware,
+} from 'type-graphql';
 import { nanoid } from 'nanoid';
 import { SurveyInput } from './dto/surveys.dto';
+import { getAuthUser } from '../utils';
+import { isAuthenticated } from '../middlewares/isAuthenticated';
+import { CtxType } from '../types';
+import { UserModel } from '../models/User';
 
 @Resolver()
 export class SurveyResolver {
@@ -16,8 +27,10 @@ export class SurveyResolver {
   }
 
   @Query(() => [Survey])
-  async getSurveys(@Arg('creator') creator: string) {
-    return await SurveyModel.find({ creator }).populate({
+  @UseMiddleware(isAuthenticated)
+  async getSurveys(@Ctx() { req }: CtxType) {
+    const authUser = await getAuthUser(req);
+    return await SurveyModel.find({ creator: authUser!._id }).populate({
       path: 'questions',
       populate: {
         path: 'options',
@@ -26,19 +39,27 @@ export class SurveyResolver {
   }
 
   @Mutation(() => Survey)
-  async createSurvey(@Arg('data') data: SurveyInput) {
+  @UseMiddleware(isAuthenticated)
+  async createSurvey(@Arg('data') data: SurveyInput, @Ctx() { req }: CtxType) {
+    const authUser = await getAuthUser(req);
     const surveyObj: Omit<Survey, '_id' | 'questions' | 'status'> = {
-      creator: data.creator,
+      creator: authUser!,
       description: data.description,
       slug: nanoid(),
       title: data.title,
     };
     const newSurvey = new SurveyModel(surveyObj);
     const survey = await newSurvey.save();
+    await UserModel.findByIdAndUpdate(authUser!._id, {
+      $push: {
+        surveys: survey._id,
+      },
+    });
     return survey;
   }
 
   @Mutation(() => Boolean, { nullable: true })
+  @UseMiddleware(isAuthenticated)
   async deleteSurvey(@Arg('id') id: string) {
     const survey = await SurveyModel.findById(id);
     if (!survey) {
@@ -49,6 +70,7 @@ export class SurveyResolver {
   }
 
   @Mutation(() => Survey, { nullable: true })
+  @UseMiddleware(isAuthenticated)
   async updateSurveyStatus(
     @Arg('id') id: string,
     @Arg('status') status: SurveyStatus

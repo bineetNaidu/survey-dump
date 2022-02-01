@@ -1,12 +1,27 @@
 import { ObjectId } from 'mongodb';
 import { Field, ObjectType } from 'type-graphql';
-import { getModelForClass, prop as Property } from '@typegoose/typegoose';
+import {
+  getModelForClass,
+  prop as Property,
+  Ref,
+  post,
+} from '@typegoose/typegoose';
+import { Survey, SurveyModel } from './Survey';
 
 export enum UserRole {
   ADMIN = 'ADMIN',
   USER = 'USER',
 }
 
+@post<User>('remove', async (user) => {
+  if (user) {
+    await SurveyModel.deleteMany({
+      _id: {
+        $in: user.surveys,
+      },
+    });
+  }
+})
 @ObjectType()
 export class User {
   @Field(() => String)
@@ -30,6 +45,13 @@ export class User {
   @Field()
   @Property({ required: true })
   avatar!: string;
+
+  @Field()
+  @Property({ required: true, default: false })
+  isVerified!: boolean;
+
+  @Property({ default: [], ref: 'Survey' })
+  surveys!: Ref<Survey[]>;
 }
 
 export const UserModel = getModelForClass(User, {
