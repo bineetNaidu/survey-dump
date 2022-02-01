@@ -17,13 +17,13 @@ export class ReportResolver {
   @Query(() => Report, { nullable: true })
   @UseMiddleware(isAuthenticated)
   async getReport(@Arg('id') id: string): Promise<Report | null> {
-    return await ReportModel.findById(id);
+    return await ReportModel.findById(id).populate('user');
   }
 
   @Query(() => [Report])
   @UseMiddleware(isAuthenticated)
   async getReports(): Promise<Report[]> {
-    return await ReportModel.find();
+    return await ReportModel.find().populate('user');
   }
 
   @Mutation(() => Report)

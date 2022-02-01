@@ -22,6 +22,7 @@ export class ResponseResolver {
       'question',
       'selectedOption',
       'survey',
+      'user',
     ]);
   }
 

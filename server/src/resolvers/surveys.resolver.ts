@@ -19,7 +19,7 @@ export class SurveyResolver {
   @Query(() => Survey, { nullable: true })
   async getSurveyBySlug(@Arg('slug') slug: string) {
     return await SurveyModel.findOne({ slug }).populate({
-      path: 'questions',
+      path: ['questions', 'creator'],
       populate: {
         path: 'options',
       },
@@ -31,7 +31,7 @@ export class SurveyResolver {
   async getSurveys(@Ctx() { req }: CtxType) {
     const authUser = await getAuthUser(req);
     return await SurveyModel.find({ creator: authUser!._id }).populate({
-      path: 'questions',
+      path: ['questions', 'creator'],
       populate: {
         path: 'options',
       },
