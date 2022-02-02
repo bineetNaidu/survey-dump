@@ -6,7 +6,6 @@ import { GoogleAuthBtn } from '../components/GoogleAuthBtn';
 import { withApollo } from '../lib/nextApollo';
 import { useLoginMutation } from '../lib/graphql';
 import { useToasts } from 'react-toast-notifications';
-import { useRouter } from 'next/router';
 import { BiLoaderCircle } from 'react-icons/bi';
 import Cookie from 'js-cookie';
 import { useUserStore } from '../lib/stores/users.store';
@@ -14,7 +13,6 @@ import { useUserStore } from '../lib/stores/users.store';
 const Login: NextPage = () => {
   const [login] = useLoginMutation();
   const { addToast } = useToasts();
-  const route = useRouter();
   const { setUser } = useUserStore();
   return (
     <div className="container mx-auto py-4">
@@ -68,7 +66,7 @@ const Login: NextPage = () => {
                   password: '',
                 });
                 setErrors({});
-                route.push('/dashboard');
+                document.location.href = '/dashboard';
               }
             }}
           >

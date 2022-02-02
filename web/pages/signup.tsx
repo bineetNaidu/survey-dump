@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { withApollo } from '../lib/nextApollo';
 import { useUserStore } from '../lib/stores/users.store';
 import { useToasts } from 'react-toast-notifications';
-import { useRouter } from 'next/router';
 import { useRegisterMutation } from '../lib/graphql';
 import { BiLoaderCircle } from 'react-icons/bi';
 import Cookie from 'js-cookie';
@@ -14,7 +13,6 @@ const Signup: NextPage = () => {
   const { setUser } = useUserStore();
   const { addToast } = useToasts();
   const [register] = useRegisterMutation();
-  const route = useRouter();
 
   const ErrorMessageWrapper = (msg: string) => (
     <div className="text-red-500 text-xs mt-1 italic">{msg}*</div>
@@ -90,7 +88,7 @@ const Signup: NextPage = () => {
                 );
                 setSubmitting(false);
                 setErrors({});
-                route.push('/dashboard');
+                document.location.href = '/dashboard';
               }
             }}
           >

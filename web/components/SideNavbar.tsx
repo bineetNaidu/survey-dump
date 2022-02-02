@@ -28,7 +28,7 @@ export const SideNavbar: FC = () => {
     Cookies.set('__survey_dump_auth_token__', '');
     logout();
     await apolloClient.resetStore();
-    router.push('/login');
+    document.location.href = '/';
   };
 
   return (
