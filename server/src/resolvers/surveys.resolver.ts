@@ -30,8 +30,10 @@ export class SurveyResolver {
   @UseMiddleware(isAuthenticated)
   async getSurveys(@Ctx() { req }: CtxType) {
     const authUser = await getAuthUser(req);
-    return await SurveyModel.find({ creator: authUser!._id }).populate({
-      path: ['questions', 'creator'],
+    return await SurveyModel.find({
+      creator: authUser!._id,
+    }).populate({
+      path: 'questions',
       populate: {
         path: 'options',
       },

@@ -51,7 +51,7 @@ export class User {
   isVerified!: boolean;
 
   @Property({ default: [], ref: 'Survey' })
-  surveys!: Ref<Survey[]>;
+  surveys: Ref<Survey>[];
 }
 
 export const UserModel = getModelForClass(User, {
