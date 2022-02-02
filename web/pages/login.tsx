@@ -4,8 +4,18 @@ import { Formik, Form, ErrorMessage } from 'formik';
 import Link from 'next/link';
 import { GoogleAuthBtn } from '../components/GoogleAuthBtn';
 import { withApollo } from '../lib/nextApollo';
+import { useLoginMutation } from '../lib/graphql';
+import { useToasts } from 'react-toast-notifications';
+import { useRouter } from 'next/router';
+import { BiLoaderCircle } from 'react-icons/bi';
+import Cookie from 'js-cookie';
+import { useUserStore } from '../lib/stores/users.store';
 
 const Login: NextPage = () => {
+  const [login] = useLoginMutation();
+  const { addToast } = useToasts();
+  const route = useRouter();
+  const { setUser } = useUserStore();
   return (
     <div className="container mx-auto py-4">
       <Navbar />
@@ -15,12 +25,12 @@ const Login: NextPage = () => {
           <h1 className="text-center text-3xl font-bold mb-3">Login</h1>
           <Formik
             initialValues={{
-              username: '',
+              email: '',
               password: '',
             }}
             validate={(values) => {
               const errors: any = {};
-              if (!values.username) errors.username = 'Required';
+              if (!values.email) errors.email = 'Required';
               if (!values.password) errors.password = 'Required';
               return errors;
             }}
@@ -29,12 +39,37 @@ const Login: NextPage = () => {
               { setSubmitting, setErrors, setValues }
             ) => {
               setSubmitting(true);
-              setSubmitting(false);
-              setValues({
-                username: '',
-                password: '',
+              const { data } = await login({
+                variables: {
+                  data: {
+                    email: values.email,
+                    password: values.password,
+                  },
+                },
               });
-              setErrors({});
+              if (data?.login?.errors) {
+                data.login.errors.forEach((error) => {
+                  setErrors({
+                    [error.field]: error.message,
+                  });
+                });
+              }
+              if (data?.login?.token) {
+                Cookie.set('__survey_dump_auth_token__', data.login.token);
+                setUser(data.login.user!);
+                addToast('Logged in successfully', {
+                  appearance: 'success',
+                  autoDismiss: true,
+                  id: 'login-success',
+                });
+                setSubmitting(false);
+                setValues({
+                  email: '',
+                  password: '',
+                });
+                setErrors({});
+                route.push('/dashboard');
+              }
             }}
           >
             {({ getFieldProps, handleSubmit, isSubmitting }) => (
@@ -42,17 +77,17 @@ const Login: NextPage = () => {
                 <div className="mb-4">
                   <label
                     className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="username"
+                    htmlFor="email"
                   >
-                    Username
+                    Email
                   </label>
                   <input
-                    type="text"
+                    type="email"
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    {...getFieldProps('username')}
+                    {...getFieldProps('email')}
                   />
                   <ErrorMessage
-                    name="username"
+                    name="email"
                     component="div"
                     render={(msg) => (
                       <div className="text-red-500 text-xs mt-1 italic">
@@ -88,10 +123,17 @@ const Login: NextPage = () => {
                 <div className="flex items-center justify-between">
                   <button
                     type="submit"
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-25 disabled:cursor-not-allowed "
                     disabled={isSubmitting}
                   >
-                    Login
+                    {isSubmitting ? (
+                      <BiLoaderCircle
+                        className="w-6 h-6 mx-auto animate-spin"
+                        color="#fff"
+                      />
+                    ) : (
+                      'Login'
+                    )}
                   </button>
                   <Link href="/signup">
                     <a className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
