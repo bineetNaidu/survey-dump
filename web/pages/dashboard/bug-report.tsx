@@ -90,4 +90,4 @@ const BugReport: NextPage = () => {
   );
 };
 
-export default withApollo({ ssr: false })(BugReport);
+export default withApollo({ ssr: true })(BugReport);
