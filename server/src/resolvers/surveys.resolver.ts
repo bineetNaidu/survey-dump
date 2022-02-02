@@ -13,6 +13,7 @@ import { getAuthUser } from '../utils';
 import { isAuthenticated } from '../middlewares/isAuthenticated';
 import { CtxType } from '../types';
 import { UserModel } from '../models/User';
+import { isOwner } from '../middlewares/isOwner';
 
 @Resolver()
 export class SurveyResolver {
@@ -61,7 +62,8 @@ export class SurveyResolver {
   }
 
   @Mutation(() => Boolean, { nullable: true })
-  @UseMiddleware(isAuthenticated)
+  @UseMiddleware(isAuthenticated, isOwner('survey'))
+  @UseMiddleware()
   async deleteSurvey(@Arg('id') id: string) {
     const survey = await SurveyModel.findById(id);
     if (!survey) {
@@ -72,7 +74,7 @@ export class SurveyResolver {
   }
 
   @Mutation(() => Survey, { nullable: true })
-  @UseMiddleware(isAuthenticated)
+  @UseMiddleware(isAuthenticated, isOwner('survey'))
   async updateSurveyStatus(
     @Arg('id') id: string,
     @Arg('status') status: SurveyStatus

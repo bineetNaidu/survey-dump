@@ -11,17 +11,20 @@ import { ReportInput, UpdateReportStatusInput } from './dto/reports.dto';
 import { getAuthUser } from '../utils';
 import { isAuthenticated } from '../middlewares/isAuthenticated';
 import { CtxType } from '../types';
+import { isAdmin } from '../middlewares/isAdmin';
 
 @Resolver()
 export class ReportResolver {
   @Query(() => Report, { nullable: true })
   @UseMiddleware(isAuthenticated)
+  @UseMiddleware(isAdmin)
   async getReport(@Arg('id') id: string): Promise<Report | null> {
     return await ReportModel.findById(id).populate('user');
   }
 
   @Query(() => [Report])
   @UseMiddleware(isAuthenticated)
+  @UseMiddleware(isAdmin)
   async getReports(): Promise<Report[]> {
     return await ReportModel.find().populate('user');
   }
@@ -42,6 +45,7 @@ export class ReportResolver {
 
   @Mutation(() => Report, { nullable: true })
   @UseMiddleware(isAuthenticated)
+  @UseMiddleware(isAdmin)
   async updateReportStatus(
     @Arg('data') data: UpdateReportStatusInput
   ): Promise<Report | null> {

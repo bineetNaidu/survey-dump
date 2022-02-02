@@ -1,9 +1,19 @@
-import { Resolver, Query, Mutation, Arg, UseMiddleware } from 'type-graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Arg,
+  UseMiddleware,
+  Ctx,
+} from 'type-graphql';
 import { Question, QuestionModel } from '../models/Question';
 import { OptionModel } from '../models/Option';
 import { Survey, SurveyModel, SurveyStatus } from '../models/Survey';
 import { QuestionInput, UpdateQuestionInput } from './dto/questions.dto';
 import { isAuthenticated } from '../middlewares/isAuthenticated';
+import { isOwner } from '../middlewares/isOwner';
+import { getAuthUser } from '../utils';
+import { CtxType } from '../types';
 
 @Resolver()
 export class QuestionResolver {
@@ -19,7 +29,10 @@ export class QuestionResolver {
 
   @Mutation(() => Question)
   @UseMiddleware(isAuthenticated)
-  async createQuestion(@Arg('data') data: QuestionInput): Promise<Question> {
+  async createQuestion(
+    @Arg('data') data: QuestionInput,
+    @Ctx() { req }: CtxType
+  ): Promise<Question> {
     if (!data.isOption && !data.isField)
       throw new Error('Question must be either an option or a field');
     if (data.isOption && data.options.length === 0)
@@ -31,6 +44,7 @@ export class QuestionResolver {
 
     const question = new QuestionModel();
     const survey = await SurveyModel.findById(data.survey);
+    const authUser = await getAuthUser(req);
 
     if (!survey) throw new Error('Survey not found');
     if (survey.status === SurveyStatus.ACTIVE)
@@ -41,6 +55,7 @@ export class QuestionResolver {
     question.isField = data.isField;
     question.fieldPlaceholder = data.fieldPlaceholder;
     question.survey = survey._id as any;
+    question.user = authUser!;
 
     const newQuestion = await question.save();
 
@@ -51,6 +66,7 @@ export class QuestionResolver {
       for (const option of data.options) {
         const newOption = new OptionModel({
           ...option,
+          user: authUser!,
           question: newQuestion._id,
         });
         const op = await newOption.save();
@@ -63,7 +79,7 @@ export class QuestionResolver {
   }
 
   @Mutation(() => Question, { nullable: true })
-  @UseMiddleware(isAuthenticated)
+  @UseMiddleware(isAuthenticated, isOwner('question'))
   async updateQuestion(
     @Arg('id') id: string,
     @Arg('data') data: UpdateQuestionInput
@@ -83,7 +99,7 @@ export class QuestionResolver {
   }
 
   @Mutation(() => Boolean)
-  @UseMiddleware(isAuthenticated)
+  @UseMiddleware(isAuthenticated, isOwner('question'))
   async deleteQuestion(@Arg('id') id: string): Promise<boolean> {
     const question = await QuestionModel.findById(id);
     if (!question) return false;
