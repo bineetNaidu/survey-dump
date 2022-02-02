@@ -2,7 +2,10 @@ mutation CreateReport($data: ReportInput!) {
   createReport(data: $data) {
     _id
     message
-    user
+    user {
+      _id
+      name
+    }
     status
     type
   }

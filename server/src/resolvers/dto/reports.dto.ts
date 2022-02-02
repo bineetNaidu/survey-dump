@@ -4,9 +4,6 @@ import { InputType, Field } from 'type-graphql';
 @InputType()
 export class ReportInput {
   @Field()
-  user!: string;
-
-  @Field()
   message!: string;
 }
 

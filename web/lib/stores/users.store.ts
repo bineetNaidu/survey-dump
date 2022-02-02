@@ -3,8 +3,9 @@ import create, { StoreApi, UseBoundStore } from 'zustand';
 import createZustandContext from 'zustand/context';
 
 export type UserType = {
+  _id: string;
   email: string;
-  image: string;
+  avatar: string;
   name: string;
 };
 

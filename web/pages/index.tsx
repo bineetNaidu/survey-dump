@@ -3,20 +3,21 @@ import Link from 'next/link';
 import { Navbar } from '../components/Navbar';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useSession } from 'next-auth/react';
 import { useUserStore } from '../lib/stores/users.store';
 import { useToasts } from 'react-toast-notifications';
+import { useMeQuery } from '../lib/graphql';
+import { withApollo } from '../lib/nextApollo';
 
 const Home: NextPage = () => {
   const router = useRouter();
-  const { status, data } = useSession();
+  const { data: authedData, loading } = useMeQuery();
   const { setUser } = useUserStore();
   const { addToast } = useToasts();
 
   useEffect(() => {
-    if (status === 'authenticated' && data?.user) {
-      setUser(data.user as any);
-      addToast(`Authenticated as ${data.user.email}`, {
+    if (!loading && authedData?.me) {
+      setUser(authedData.me);
+      addToast(`Authenticated as ${authedData.me.email}`, {
         appearance: 'success',
         autoDismissTimeout: 2000,
         autoDismiss: true,
@@ -24,7 +25,7 @@ const Home: NextPage = () => {
       });
       router.push('/dashboard');
     }
-  }, [status, data, setUser, router, addToast]);
+  }, [loading, authedData, setUser, router, addToast]);
 
   return (
     <div className="container mx-auto py-4">
@@ -68,4 +69,4 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default withApollo({ ssr: false })(Home);

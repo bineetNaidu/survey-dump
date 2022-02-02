@@ -35,7 +35,6 @@ const BugReport: NextPage = () => {
                   variables: {
                     data: {
                       message: values.message,
-                      user: authUser!.email,
                     },
                   },
                 });
@@ -91,4 +90,4 @@ const BugReport: NextPage = () => {
   );
 };
 
-export default withApollo({ ssr: false })(BugReport);
+export default withApollo({ ssr: true })(BugReport);

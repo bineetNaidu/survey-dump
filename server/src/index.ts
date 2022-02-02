@@ -8,11 +8,16 @@ import { QuestionResolver } from './resolvers/questions.resolver';
 import { OptionResolver } from './resolvers/options.resolver';
 import { ResponseResolver } from './resolvers/responses.resolver';
 import { ReportResolver } from './resolvers/reports.resolver';
+import { UserResolver } from './resolvers/users.resolver';
 
 dotenv.config();
 const bootstrap = async () => {
+  const PORT = process.env.PORT || 4000;
   if (!process.env.MONGO_URI) {
     throw new Error('??>> {" MONGO_URI must be defined!! "} ');
+  }
+  if (!process.env.JWT_SECRET) {
+    throw new Error('??>> {" JWT_SECRET must be defined!! "} ');
   }
   await mongoose.connect(process.env.MONGO_URI);
 
@@ -25,6 +30,7 @@ const bootstrap = async () => {
         OptionResolver,
         ResponseResolver,
         ReportResolver,
+        UserResolver,
       ],
     }),
     formatError: (err) => {
@@ -32,6 +38,7 @@ const bootstrap = async () => {
         message: err.message,
       };
     },
+    context: ({ req, res }) => ({ req, res }),
     cors: {
       origin:
         process.env.NODE_ENV === 'production'
@@ -42,7 +49,7 @@ const bootstrap = async () => {
     },
   });
 
-  server.listen().then(({ url }) => {
+  server.listen({ port: PORT }).then(({ url }) => {
     console.log(`🚀  Server ready at ${url}`);
   });
 };

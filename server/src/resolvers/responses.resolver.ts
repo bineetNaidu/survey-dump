@@ -1,21 +1,37 @@
-import { Resolver, Query, Mutation, Arg } from 'type-graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Arg,
+  Ctx,
+  UseMiddleware,
+} from 'type-graphql';
 import { Response, ResponseModel } from '../models/Response';
 import { SurveyModel, SurveyStatus } from '../models/Survey';
 import { ResponseInput } from './dto/responses.dto';
+import { getAuthUser } from '../utils';
+import { isAuthenticated } from '../middlewares/isAuthenticated';
+import { CtxType } from '../types';
 
 @Resolver()
 export class ResponseResolver {
   @Query(() => [Response])
+  @UseMiddleware(isAuthenticated)
   findResponseBySurveySlug(@Arg('slug') slug: string) {
     return ResponseModel.find({ slug }).populate([
       'question',
       'selectedOption',
       'survey',
+      'user',
     ]);
   }
 
   @Mutation(() => Response)
-  async createResponse(@Arg('data') data: ResponseInput) {
+  @UseMiddleware(isAuthenticated)
+  async createResponse(
+    @Arg('data') data: ResponseInput,
+    @Ctx() { req }: CtxType
+  ) {
     const existingResponse = await ResponseModel.findOne({
       survey: data.surveyId,
       question: data.questionId,
@@ -34,11 +50,12 @@ export class ResponseResolver {
         'Survey is not active anymore, cannot Response at this time'
       );
     }
+    const authUser = await getAuthUser(req);
 
     const response = await ResponseModel.create({
       survey: data.surveyId,
       question: data.questionId,
-      user: data.user,
+      user: authUser!,
       text: data.text,
       selectedOption: data.selectedOptionId,
     });

@@ -1,11 +1,13 @@
-import { Mutation, Resolver, Arg } from 'type-graphql';
+import { Mutation, Resolver, Arg, UseMiddleware } from 'type-graphql';
 import { OptionModel, Option } from '../models/Option';
 import { QuestionModel } from '../models/Question';
 import { OptionInput } from './dto/options.dto';
+import { isAuthenticated } from '../middlewares/isAuthenticated';
 
 @Resolver()
 export class OptionResolver {
   @Mutation(() => Option)
+  @UseMiddleware(isAuthenticated)
   async createOption(
     @Arg('questionId') questionId: string,
     @Arg('data') data: OptionInput
@@ -23,6 +25,7 @@ export class OptionResolver {
   }
 
   @Mutation(() => Option, { nullable: true })
+  @UseMiddleware(isAuthenticated)
   async updateOption(
     @Arg('id') id: string,
     @Arg('data') data: OptionInput
@@ -39,6 +42,7 @@ export class OptionResolver {
   }
 
   @Mutation(() => Boolean)
+  @UseMiddleware(isAuthenticated)
   async deleteOption(
     @Arg('id') id: string,
     @Arg('questionId') questionId: string

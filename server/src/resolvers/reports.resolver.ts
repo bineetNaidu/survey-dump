@@ -1,26 +1,47 @@
 import { Report, ReportModel } from '../models/Report';
-import { Resolver, Query, Arg, Mutation } from 'type-graphql';
+import {
+  Resolver,
+  Query,
+  Arg,
+  Mutation,
+  Ctx,
+  UseMiddleware,
+} from 'type-graphql';
 import { ReportInput, UpdateReportStatusInput } from './dto/reports.dto';
+import { getAuthUser } from '../utils';
+import { isAuthenticated } from '../middlewares/isAuthenticated';
+import { CtxType } from '../types';
 
 @Resolver()
 export class ReportResolver {
   @Query(() => Report, { nullable: true })
+  @UseMiddleware(isAuthenticated)
   async getReport(@Arg('id') id: string): Promise<Report | null> {
-    return await ReportModel.findById(id);
+    return await ReportModel.findById(id).populate('user');
   }
 
   @Query(() => [Report])
+  @UseMiddleware(isAuthenticated)
   async getReports(): Promise<Report[]> {
-    return await ReportModel.find();
+    return await ReportModel.find().populate('user');
   }
 
   @Mutation(() => Report)
-  async createReport(@Arg('data') data: ReportInput): Promise<Report> {
-    const report = new ReportModel(data);
+  @UseMiddleware(isAuthenticated)
+  async createReport(
+    @Arg('data') data: ReportInput,
+    @Ctx() { req }: CtxType
+  ): Promise<Report> {
+    const authUser = await getAuthUser(req);
+    const report = new ReportModel({
+      message: data.message,
+      user: authUser!,
+    });
     return await report.save();
   }
 
   @Mutation(() => Report, { nullable: true })
+  @UseMiddleware(isAuthenticated)
   async updateReportStatus(
     @Arg('data') data: UpdateReportStatusInput
   ): Promise<Report | null> {

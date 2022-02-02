@@ -3,8 +3,6 @@ import { Field, InputType } from 'type-graphql';
 @InputType()
 export class ResponseInput {
   @Field()
-  user!: string;
-  @Field()
   questionId: string;
   @Field()
   surveyId: string;

@@ -3,6 +3,8 @@ fragment BaseSurvey on Survey {
   slug
   title
   description
-  creator
+  creator {
+    _id
+  }
   status
 }

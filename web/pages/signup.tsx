@@ -3,18 +3,20 @@ import { Navbar } from '../components/Navbar';
 import { Formik, Form, ErrorMessage } from 'formik';
 import Link from 'next/link';
 import { withApollo } from '../lib/nextApollo';
-import { useMutation } from '@apollo/client';
-// import { CREATE_USER } from '../lib/queries';
-import type { UserType } from '../lib/types';
-import { userStore } from '../lib/stores/users.store';
+import { useUserStore } from '../lib/stores/users.store';
 import { useToasts } from 'react-toast-notifications';
-import { useRouter } from 'next/router';
+import { useRegisterMutation } from '../lib/graphql';
+import { BiLoaderCircle } from 'react-icons/bi';
+import Cookie from 'js-cookie';
 
 const Signup: NextPage = () => {
-  // const [createUser] = useMutation(CREATE_USER);
-  const { setUser } = userStore();
+  const { setUser } = useUserStore();
   const { addToast } = useToasts();
-  const route = useRouter();
+  const [register] = useRegisterMutation();
+
+  const ErrorMessageWrapper = (msg: string) => (
+    <div className="text-red-500 text-xs mt-1 italic">{msg}*</div>
+  );
 
   return (
     <div className="container mx-auto py-4">
@@ -26,7 +28,7 @@ const Signup: NextPage = () => {
           <Formik
             initialValues={{
               email: '',
-              username: '',
+              name: '',
               avatar: '',
               password: '',
               confirmPassword: '',
@@ -36,11 +38,8 @@ const Signup: NextPage = () => {
               if (!values.email) {
                 errors.email = 'Required';
               }
-              if (!values.username) {
-                errors.username = 'Required';
-              }
-              if (!values.avatar) {
-                errors.avatar = 'Required';
+              if (!values.name) {
+                errors.name = 'Required';
               }
               if (!values.password) {
                 errors.password = 'Required';
@@ -56,50 +55,44 @@ const Signup: NextPage = () => {
             onSubmit={async (values, { setSubmitting, setErrors }) => {
               setSubmitting(true);
 
-              // const date = new Date();
-              // const createdAt = `${date.getFullYear()}-${
-              //   date.getMonth() < 10
-              //     ? `0${date.getMonth() + 1}`
-              //     : date.getMonth() + 1
-              // }-${date.getDate()}`;
+              const { data } = await register({
+                variables: {
+                  data: {
+                    email: values.email,
+                    name: values.name,
+                    password: values.password,
+                    avatar: values.avatar,
+                  },
+                },
+              });
 
-              // const { data, errors } = await createUser({
-              //   variables: {
-              //     data: {
-              //       email: values.email,
-              //       username: values.username,
-              //       avatar: values.avatar,
-              //       password: values.password,
-              //       surveys: [],
-              //       createdAt,
-              //     },
-              //   },
-              // });
+              if (data?.register?.errors) {
+                data.register.errors.forEach((error) => {
+                  setErrors({
+                    [error.field]: error.message,
+                  });
+                });
+              }
 
-              // const { createUser: authUser } = data as {
-              //   createUser: UserType | null;
-              // };
-
-              // console.log(data);
-              // // if (errors) {
-              // // }
-
-              // if (authUser) {
-              //   setUser(authUser);
-              //   addToast('Logged in successfully', {
-              //     appearance: 'success',
-              //     autoDismiss: true,
-              //     onDismiss: () => {
-              //       route.push('/');
-              //     },
-              //   });
-              // }
-
-              setSubmitting(false);
-              setErrors({});
+              if (data?.register.token) {
+                setUser(data.register.user!);
+                Cookie.set('__survey_dump_auth_token__', data.register.token);
+                addToast(
+                  `Successfully registered as ${data.register.user!.email}`,
+                  {
+                    appearance: 'success',
+                    autoDismissTimeout: 2000,
+                    autoDismiss: true,
+                    id: 'registered-success',
+                  }
+                );
+                setSubmitting(false);
+                setErrors({});
+                document.location.href = '/dashboard';
+              }
             }}
           >
-            {({ errors, getFieldProps, handleSubmit }) => (
+            {({ errors, getFieldProps, handleSubmit, isSubmitting }) => (
               <Form onSubmit={handleSubmit}>
                 <div className="mb-4">
                   <label
@@ -116,33 +109,25 @@ const Signup: NextPage = () => {
                   <ErrorMessage
                     name="email"
                     component="div"
-                    render={(msg) => (
-                      <div className="text-red-500 text-xs mt-1 italic">
-                        {msg}*
-                      </div>
-                    )}
+                    render={ErrorMessageWrapper}
                   />
                 </div>
                 <div className="mb-4">
                   <label
                     className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="username"
+                    htmlFor="name"
                   >
-                    Username
+                    Name
                   </label>
                   <input
                     type="text"
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    {...getFieldProps('username')}
+                    {...getFieldProps('name')}
                   />
                   <ErrorMessage
-                    name="username"
+                    name="name"
                     component="div"
-                    render={(msg) => (
-                      <div className="text-red-500 text-xs mt-1 italic">
-                        {msg}*
-                      </div>
-                    )}
+                    render={ErrorMessageWrapper}
                   />
                 </div>
                 <div className="mb-4">
@@ -160,11 +145,7 @@ const Signup: NextPage = () => {
                   <ErrorMessage
                     name="avatar"
                     component="div"
-                    render={(msg) => (
-                      <div className="text-red-500 text-xs mt-1 italic">
-                        {msg}*
-                      </div>
-                    )}
+                    render={ErrorMessageWrapper}
                   />
                 </div>
                 <div className="mb-4">
@@ -182,11 +163,7 @@ const Signup: NextPage = () => {
                   <ErrorMessage
                     name="password"
                     component="div"
-                    render={(msg) => (
-                      <div className="text-red-500 text-xs mt-1 italic">
-                        {msg}*
-                      </div>
-                    )}
+                    render={ErrorMessageWrapper}
                   />
                 </div>
                 <div className="mb-4">
@@ -204,19 +181,22 @@ const Signup: NextPage = () => {
                   <ErrorMessage
                     name="confirmPassword"
                     component="div"
-                    render={(msg) => (
-                      <div className="text-red-500 text-xs mt-1 italic">
-                        {msg}*
-                      </div>
-                    )}
+                    render={ErrorMessageWrapper}
                   />
                 </div>
                 <div className="flex items-center justify-between">
                   <button
+                    disabled={isSubmitting}
                     type="submit"
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-25 disabled:cursor-not-allowed"
                   >
-                    Sign Up
+                    {!isSubmitting ? (
+                      'Sign Up'
+                    ) : (
+                      <div className="flex items-center w-full justify-center">
+                        <BiLoaderCircle className="animate-spin" />
+                      </div>
+                    )}
                   </button>
                   <Link href="/login">
                     <a className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">

@@ -4,15 +4,16 @@ import { getModelForClass, prop as Property, Ref } from '@typegoose/typegoose';
 import { Question } from './Question';
 import { Option } from './Option';
 import { Survey } from './Survey';
+import { User } from './User';
 
 @ObjectType()
 export class Response {
   @Field(() => String)
   readonly _id: ObjectId;
 
-  @Field()
-  @Property({ required: true })
-  user!: string;
+  @Field(() => User)
+  @Property({ required: true, ref: 'User' })
+  user!: Ref<User>;
 
   @Field(() => Survey)
   @Property({ required: true, ref: 'Survey' })

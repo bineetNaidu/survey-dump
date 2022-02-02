@@ -19,6 +19,12 @@ import { ResponseModel } from './Response';
       },
     });
     await ResponseModel.deleteMany({}).where('question').equals(question._id);
+    const survey = await SurveyModel.findById(question.survey!._id);
+    console.log(survey);
+    survey!.questions = survey!.questions.filter(
+      (q) => q!._id.toString() !== question._id.toString()
+    );
+    await survey!.save();
   }
 })
 @pre<Question>('remove', async function (next) {

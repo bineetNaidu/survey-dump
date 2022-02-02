@@ -1,6 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { Field, ObjectType } from 'type-graphql';
-import { getModelForClass, prop as Property } from '@typegoose/typegoose';
+import { getModelForClass, prop as Property, Ref } from '@typegoose/typegoose';
+import { User } from './User';
 
 export enum ReportType {
   BUG = 'BUG',
@@ -16,9 +17,9 @@ export class Report {
   @Field(() => String)
   readonly _id: ObjectId;
 
-  @Field()
-  @Property({ required: true })
-  user!: string;
+  @Field(() => User)
+  @Property({ required: true, ref: 'User' })
+  user!: Ref<User>;
 
   @Field()
   @Property({ required: true, enum: ReportType, default: ReportType.BUG })
