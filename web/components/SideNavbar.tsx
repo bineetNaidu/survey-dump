@@ -4,25 +4,30 @@ import { IoMdSettings } from 'react-icons/io';
 import { MdSpaceDashboard, MdOutlineBugReport } from 'react-icons/md';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { useSession, signOut } from 'next-auth/react';
-import { useUserStore, UserType } from '../lib/stores/users.store';
+import { useUserStore } from '../lib/stores/users.store';
+import { useMeQuery } from '../lib/graphql';
+import Cookies from 'js-cookie';
+import { BiLoaderCircle } from 'react-icons/bi';
+import { useApolloClient } from '@apollo/client';
 
 export const SideNavbar: FC = () => {
   const { authUser, logout, setUser } = useUserStore();
   const router = useRouter();
-  const { data, status } = useSession();
+  const { data: authedData, loading: meQLoading } = useMeQuery();
+  const apolloClient = useApolloClient();
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    if (!meQLoading && !authedData?.me) {
       router.push('/login');
-    } else if (data?.user) {
-      setUser(data!.user as UserType);
+    } else if (authedData?.me) {
+      setUser(authedData!.me);
     }
-  }, [router, status, data, setUser]);
+  }, [meQLoading, authedData, setUser, router]);
 
   const handleLogout = async () => {
-    await signOut();
+    Cookies.set('__survey_dump_auth_token__', '');
     logout();
+    await apolloClient.resetStore();
     router.push('/login');
   };
 
@@ -73,13 +78,18 @@ export const SideNavbar: FC = () => {
           </Link>
         </div>
 
-        {authUser ? (
+        {meQLoading ? (
+          <div className="flex justify-center items-center h-16">
+            <BiLoaderCircle className="animate-spin text-white" size="1.8rem" />
+          </div>
+        ) : authUser ? (
           <div
-            className="flex justify-center pl-3 ransition-all hover:bg-[#b5b5b52e] mt-2 py-2 rounded cursor-pointer"
+            className="flex justify-center ransition-all hover:bg-[#b5b5b52e] mt-2 py-2 rounded cursor-pointer
+						items-center"
             onClick={handleLogout}
           >
             <Image
-              src={authUser.image}
+              src={authUser.avatar}
               width={40}
               height={40}
               alt={authUser.name}

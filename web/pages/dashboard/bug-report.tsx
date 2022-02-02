@@ -35,7 +35,6 @@ const BugReport: NextPage = () => {
                   variables: {
                     data: {
                       message: values.message,
-                      user: authUser!.email,
                     },
                   },
                 });

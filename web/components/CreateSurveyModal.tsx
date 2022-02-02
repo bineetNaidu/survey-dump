@@ -27,7 +27,6 @@ export const CreateSurveyForm: FC<CreateSurveyFormProps> = ({
       const { data } = await createSurvey({
         variables: {
           data: {
-            creator: authUser.email,
             description,
             title,
           },
@@ -53,7 +52,6 @@ export const CreateSurveyForm: FC<CreateSurveyFormProps> = ({
         }}
         onSubmit={async (values, { setSubmitting }) => {
           try {
-            // check for empty fields
             if (values.title.length === 0) {
               throw new Error('Title is required');
             }
