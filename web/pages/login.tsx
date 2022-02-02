@@ -7,8 +7,8 @@ import { withApollo } from '../lib/nextApollo';
 import { useLoginMutation } from '../lib/graphql';
 import { useToasts } from 'react-toast-notifications';
 import { BiLoaderCircle } from 'react-icons/bi';
-import Cookie from 'js-cookie';
 import { useUserStore } from '../lib/stores/users.store';
+import { setToken } from '../lib/utils';
 
 const Login: NextPage = () => {
   const [login] = useLoginMutation();
@@ -53,7 +53,7 @@ const Login: NextPage = () => {
                 });
               }
               if (data?.login?.token) {
-                Cookie.set('__survey_dump_auth_token__', data.login.token);
+                setToken(data.login.token);
                 setUser(data.login.user!);
                 addToast('Logged in successfully', {
                   appearance: 'success',

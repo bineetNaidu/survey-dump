@@ -7,7 +7,7 @@ import { useUserStore } from '../lib/stores/users.store';
 import { useToasts } from 'react-toast-notifications';
 import { useRegisterMutation } from '../lib/graphql';
 import { BiLoaderCircle } from 'react-icons/bi';
-import Cookie from 'js-cookie';
+import { setToken } from '../lib/utils';
 
 const Signup: NextPage = () => {
   const { setUser } = useUserStore();
@@ -76,7 +76,7 @@ const Signup: NextPage = () => {
 
               if (data?.register.token) {
                 setUser(data.register.user!);
-                Cookie.set('__survey_dump_auth_token__', data.register.token);
+                setToken(data.register.token);
                 addToast(
                   `Successfully registered as ${data.register.user!.email}`,
                   {

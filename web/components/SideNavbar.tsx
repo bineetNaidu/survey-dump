@@ -6,9 +6,9 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useUserStore } from '../lib/stores/users.store';
 import { useMeQuery } from '../lib/graphql';
-import Cookies from 'js-cookie';
 import { BiLoaderCircle } from 'react-icons/bi';
 import { useApolloClient } from '@apollo/client';
+import { setToken } from '../lib/utils';
 
 export const SideNavbar: FC = () => {
   const { authUser, logout, setUser } = useUserStore();
@@ -25,7 +25,7 @@ export const SideNavbar: FC = () => {
   }, [meQLoading, authedData, setUser, router]);
 
   const handleLogout = async () => {
-    Cookies.set('__survey_dump_auth_token__', '');
+    setToken('', true);
     logout();
     await apolloClient.resetStore();
     document.location.href = '/';

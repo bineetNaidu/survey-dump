@@ -1,6 +1,11 @@
-export const getCreatedAt = (): string => {
-  const date = new Date();
-  return `${date.getFullYear()}-${
-    date.getMonth() < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1
-  }-${date.getDate()}`;
+import Cookie from 'js-cookie';
+
+export const setToken = (token: string, reset: boolean = false) => {
+  if (reset) {
+    Cookie.remove('__survey_dump_auth_token__');
+  } else {
+    Cookie.set('__survey_dump_auth_token__', token, {
+      expires: 60 * 60 * 24 * 2, // 2 days
+    });
+  }
 };
