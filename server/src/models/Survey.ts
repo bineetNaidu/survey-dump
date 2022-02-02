@@ -9,7 +9,7 @@ import {
 import { Question, QuestionModel } from './Question';
 import { OptionModel } from './Option';
 import { ResponseModel } from './Response';
-import { User } from './User';
+import { User, UserModel } from './User';
 
 export enum SurveyStatus {
   ACTIVE = 'ACTIVE',
@@ -37,6 +37,12 @@ export enum SurveyStatus {
     });
 
     await ResponseModel.deleteMany({}).where('survey').equals(survey._id);
+
+    const creator = await UserModel.findById(survey.creator!._id);
+    creator!.surveys = creator!.surveys.filter(
+      (s) => s!._id.toString() !== survey._id.toString()
+    );
+    await creator!.save();
   }
 })
 @ObjectType()
