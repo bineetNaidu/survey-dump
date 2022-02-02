@@ -15,6 +15,24 @@ export type Scalars = {
   Float: number;
 };
 
+export type AuthResponse = {
+  __typename?: 'AuthResponse';
+  errors?: Maybe<Array<FieldError>>;
+  token?: Maybe<Scalars['String']>;
+  user?: Maybe<User>;
+};
+
+export type FieldError = {
+  __typename?: 'FieldError';
+  field: Scalars['String'];
+  message: Scalars['String'];
+};
+
+export type LoginInput = {
+  email: Scalars['String'];
+  password: Scalars['String'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createOption: Option;
@@ -25,6 +43,8 @@ export type Mutation = {
   deleteOption: Scalars['Boolean'];
   deleteQuestion: Scalars['Boolean'];
   deleteSurvey?: Maybe<Scalars['Boolean']>;
+  login: AuthResponse;
+  register: AuthResponse;
   updateOption?: Maybe<Option>;
   updateQuestion?: Maybe<Question>;
   updateReportStatus?: Maybe<Report>;
@@ -74,6 +94,16 @@ export type MutationDeleteSurveyArgs = {
 };
 
 
+export type MutationLoginArgs = {
+  data: LoginInput;
+};
+
+
+export type MutationRegisterArgs = {
+  data: RegisterInput;
+};
+
+
 export type MutationUpdateOptionArgs = {
   data: OptionInput;
   id: Scalars['String'];
@@ -116,6 +146,7 @@ export type Query = {
   getReports: Array<Report>;
   getSurveyBySlug?: Maybe<Survey>;
   getSurveys: Array<Survey>;
+  me?: Maybe<User>;
 };
 
 
@@ -136,11 +167,6 @@ export type QueryGetReportArgs = {
 
 export type QueryGetSurveyBySlugArgs = {
   slug: Scalars['String'];
-};
-
-
-export type QueryGetSurveysArgs = {
-  creator: Scalars['String'];
 };
 
 export type Question = {
@@ -168,18 +194,24 @@ export type QuestionOptionInput = {
   other?: InputMaybe<Scalars['String']>;
 };
 
+export type RegisterInput = {
+  avatar?: InputMaybe<Scalars['String']>;
+  email: Scalars['String'];
+  name: Scalars['String'];
+  password: Scalars['String'];
+};
+
 export type Report = {
   __typename?: 'Report';
   _id: Scalars['String'];
   message: Scalars['String'];
   status: Scalars['String'];
   type: Scalars['String'];
-  user: Scalars['String'];
+  user: User;
 };
 
 export type ReportInput = {
   message: Scalars['String'];
-  user: Scalars['String'];
 };
 
 export type Response = {
@@ -189,7 +221,7 @@ export type Response = {
   selectedOption?: Maybe<Option>;
   survey: Survey;
   text?: Maybe<Scalars['String']>;
-  user: Scalars['String'];
+  user: User;
 };
 
 export type ResponseInput = {
@@ -197,13 +229,12 @@ export type ResponseInput = {
   selectedOptionId?: InputMaybe<Scalars['String']>;
   surveyId: Scalars['String'];
   text?: InputMaybe<Scalars['String']>;
-  user: Scalars['String'];
 };
 
 export type Survey = {
   __typename?: 'Survey';
   _id: Scalars['String'];
-  creator: Scalars['String'];
+  creator: User;
   description: Scalars['String'];
   questions: Array<Question>;
   slug: Scalars['String'];
@@ -212,7 +243,6 @@ export type Survey = {
 };
 
 export type SurveyInput = {
-  creator: Scalars['String'];
   description: Scalars['String'];
   title: Scalars['String'];
 };
@@ -227,11 +257,21 @@ export type UpdateReportStatusInput = {
   status: Scalars['String'];
 };
 
+export type User = {
+  __typename?: 'User';
+  _id: Scalars['String'];
+  avatar: Scalars['String'];
+  email: Scalars['String'];
+  isVerified: Scalars['Boolean'];
+  name: Scalars['String'];
+  role: Scalars['String'];
+};
+
 export type BaseOptionFragment = { __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined };
 
 export type BaseQuestionFragment = { __typename?: 'Question', _id: string, fieldPlaceholder?: string | null | undefined, isField: boolean, isOption: boolean, title: string, options: Array<{ __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined }>, survey: { __typename?: 'Survey', _id: string } };
 
-export type BaseSurveyFragment = { __typename?: 'Survey', _id: string, slug: string, title: string, description: string, creator: string, status: string };
+export type BaseSurveyFragment = { __typename?: 'Survey', _id: string, slug: string, title: string, description: string, status: string, creator: { __typename?: 'User', _id: string } };
 
 export type CreateOptionMutationVariables = Exact<{
   data: OptionInput;
@@ -253,14 +293,14 @@ export type CreateReportMutationVariables = Exact<{
 }>;
 
 
-export type CreateReportMutation = { __typename?: 'Mutation', createReport: { __typename?: 'Report', _id: string, message: string, user: string, status: string, type: string } };
+export type CreateReportMutation = { __typename?: 'Mutation', createReport: { __typename?: 'Report', _id: string, message: string, status: string, type: string, user: { __typename?: 'User', _id: string, name: string } } };
 
 export type CreateSurveyMutationVariables = Exact<{
   data: SurveyInput;
 }>;
 
 
-export type CreateSurveyMutation = { __typename?: 'Mutation', createSurvey: { __typename?: 'Survey', _id: string, slug: string, title: string, description: string, creator: string, status: string, questions: Array<{ __typename?: 'Question', _id: string, fieldPlaceholder?: string | null | undefined, isField: boolean, isOption: boolean, title: string, options: Array<{ __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined }>, survey: { __typename?: 'Survey', _id: string } }> } };
+export type CreateSurveyMutation = { __typename?: 'Mutation', createSurvey: { __typename?: 'Survey', _id: string, slug: string, title: string, description: string, status: string, questions: Array<{ __typename?: 'Question', _id: string, fieldPlaceholder?: string | null | undefined, isField: boolean, isOption: boolean, title: string, options: Array<{ __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined }>, survey: { __typename?: 'Survey', _id: string } }>, creator: { __typename?: 'User', _id: string } } };
 
 export type DeleteOptionMutationVariables = Exact<{
   questionId: Scalars['String'];
@@ -283,6 +323,20 @@ export type DeleteSurveyMutationVariables = Exact<{
 
 
 export type DeleteSurveyMutation = { __typename?: 'Mutation', deleteSurvey?: boolean | null | undefined };
+
+export type LoginMutationVariables = Exact<{
+  data: LoginInput;
+}>;
+
+
+export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'AuthResponse', token?: string | null | undefined, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null | undefined, user?: { __typename?: 'User', _id: string, avatar: string, name: string, email: string } | null | undefined } };
+
+export type RegisterMutationVariables = Exact<{
+  data: RegisterInput;
+}>;
+
+
+export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'AuthResponse', token?: string | null | undefined, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null | undefined, user?: { __typename?: 'User', _id: string, avatar: string, name: string, email: string } | null | undefined } };
 
 export type UpdateOptionMutationVariables = Exact<{
   data: OptionInput;
@@ -313,14 +367,17 @@ export type GetSurveyBySlugQueryVariables = Exact<{
 }>;
 
 
-export type GetSurveyBySlugQuery = { __typename?: 'Query', getSurveyBySlug?: { __typename?: 'Survey', _id: string, slug: string, title: string, description: string, creator: string, status: string, questions: Array<{ __typename?: 'Question', _id: string, fieldPlaceholder?: string | null | undefined, isField: boolean, isOption: boolean, title: string, options: Array<{ __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined }>, survey: { __typename?: 'Survey', _id: string } }> } | null | undefined };
+export type GetSurveyBySlugQuery = { __typename?: 'Query', getSurveyBySlug?: { __typename?: 'Survey', _id: string, slug: string, title: string, description: string, status: string, questions: Array<{ __typename?: 'Question', _id: string, fieldPlaceholder?: string | null | undefined, isField: boolean, isOption: boolean, title: string, options: Array<{ __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined }>, survey: { __typename?: 'Survey', _id: string } }>, creator: { __typename?: 'User', _id: string } } | null | undefined };
 
-export type GetSurveysQueryVariables = Exact<{
-  creator: Scalars['String'];
-}>;
+export type GetSurveysQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetSurveysQuery = { __typename?: 'Query', getSurveys: Array<{ __typename?: 'Survey', _id: string, slug: string, title: string, description: string, creator: string, status: string, questions: Array<{ __typename?: 'Question', _id: string, fieldPlaceholder?: string | null | undefined, isField: boolean, isOption: boolean, title: string, options: Array<{ __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined }>, survey: { __typename?: 'Survey', _id: string } }> }> };
+export type GetSurveysQuery = { __typename?: 'Query', getSurveys: Array<{ __typename?: 'Survey', _id: string, slug: string, title: string, description: string, status: string, questions: Array<{ __typename?: 'Question', _id: string, fieldPlaceholder?: string | null | undefined, isField: boolean, isOption: boolean, title: string, options: Array<{ __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined }>, survey: { __typename?: 'Survey', _id: string } }>, creator: { __typename?: 'User', _id: string } }> };
+
+export type MeQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MeQuery = { __typename?: 'Query', me?: { __typename?: 'User', _id: string, avatar: string, email: string, name: string } | null | undefined };
 
 export const BaseOptionFragmentDoc = gql`
     fragment BaseOption on Option {
@@ -350,7 +407,9 @@ export const BaseSurveyFragmentDoc = gql`
   slug
   title
   description
-  creator
+  creator {
+    _id
+  }
   status
 }
     `;
@@ -426,7 +485,10 @@ export const CreateReportDocument = gql`
   createReport(data: $data) {
     _id
     message
-    user
+    user {
+      _id
+      name
+    }
     status
     type
   }
@@ -589,6 +651,92 @@ export function useDeleteSurveyMutation(baseOptions?: Apollo.MutationHookOptions
 export type DeleteSurveyMutationHookResult = ReturnType<typeof useDeleteSurveyMutation>;
 export type DeleteSurveyMutationResult = Apollo.MutationResult<DeleteSurveyMutation>;
 export type DeleteSurveyMutationOptions = Apollo.BaseMutationOptions<DeleteSurveyMutation, DeleteSurveyMutationVariables>;
+export const LoginDocument = gql`
+    mutation Login($data: LoginInput!) {
+  login(data: $data) {
+    errors {
+      field
+      message
+    }
+    token
+    user {
+      _id
+      avatar
+      name
+      email
+    }
+  }
+}
+    `;
+export type LoginMutationFn = Apollo.MutationFunction<LoginMutation, LoginMutationVariables>;
+
+/**
+ * __useLoginMutation__
+ *
+ * To run a mutation, you first call `useLoginMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLoginMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [loginMutation, { data, loading, error }] = useLoginMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useLoginMutation(baseOptions?: Apollo.MutationHookOptions<LoginMutation, LoginMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument, options);
+      }
+export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
+export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
+export type LoginMutationOptions = Apollo.BaseMutationOptions<LoginMutation, LoginMutationVariables>;
+export const RegisterDocument = gql`
+    mutation Register($data: RegisterInput!) {
+  register(data: $data) {
+    errors {
+      field
+      message
+    }
+    token
+    user {
+      _id
+      avatar
+      name
+      email
+    }
+  }
+}
+    `;
+export type RegisterMutationFn = Apollo.MutationFunction<RegisterMutation, RegisterMutationVariables>;
+
+/**
+ * __useRegisterMutation__
+ *
+ * To run a mutation, you first call `useRegisterMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRegisterMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [registerMutation, { data, loading, error }] = useRegisterMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<RegisterMutation, RegisterMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument, options);
+      }
+export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
+export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
+export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
 export const UpdateOptionDocument = gql`
     mutation UpdateOption($data: OptionInput!, $updateOptionId: String!) {
   updateOption(data: $data, id: $updateOptionId) {
@@ -731,8 +879,8 @@ export type GetSurveyBySlugQueryHookResult = ReturnType<typeof useGetSurveyBySlu
 export type GetSurveyBySlugLazyQueryHookResult = ReturnType<typeof useGetSurveyBySlugLazyQuery>;
 export type GetSurveyBySlugQueryResult = Apollo.QueryResult<GetSurveyBySlugQuery, GetSurveyBySlugQueryVariables>;
 export const GetSurveysDocument = gql`
-    query GetSurveys($creator: String!) {
-  getSurveys(creator: $creator) {
+    query GetSurveys {
+  getSurveys {
     ...BaseSurvey
     questions {
       ...BaseQuestion
@@ -754,11 +902,10 @@ ${BaseQuestionFragmentDoc}`;
  * @example
  * const { data, loading, error } = useGetSurveysQuery({
  *   variables: {
- *      creator: // value for 'creator'
  *   },
  * });
  */
-export function useGetSurveysQuery(baseOptions: Apollo.QueryHookOptions<GetSurveysQuery, GetSurveysQueryVariables>) {
+export function useGetSurveysQuery(baseOptions?: Apollo.QueryHookOptions<GetSurveysQuery, GetSurveysQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<GetSurveysQuery, GetSurveysQueryVariables>(GetSurveysDocument, options);
       }
@@ -769,6 +916,43 @@ export function useGetSurveysLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions
 export type GetSurveysQueryHookResult = ReturnType<typeof useGetSurveysQuery>;
 export type GetSurveysLazyQueryHookResult = ReturnType<typeof useGetSurveysLazyQuery>;
 export type GetSurveysQueryResult = Apollo.QueryResult<GetSurveysQuery, GetSurveysQueryVariables>;
+export const MeDocument = gql`
+    query Me {
+  me {
+    _id
+    avatar
+    email
+    name
+  }
+}
+    `;
+
+/**
+ * __useMeQuery__
+ *
+ * To run a query within a React component, call `useMeQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMeQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMeQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useMeQuery(baseOptions?: Apollo.QueryHookOptions<MeQuery, MeQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<MeQuery, MeQueryVariables>(MeDocument, options);
+      }
+export function useMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeQuery, MeQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<MeQuery, MeQueryVariables>(MeDocument, options);
+        }
+export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
+export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
+export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
 
       export interface PossibleTypesResultData {
         possibleTypes: {
