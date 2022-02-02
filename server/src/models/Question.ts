@@ -10,6 +10,7 @@ import {
 import { Survey, SurveyModel, SurveyStatus } from './Survey';
 import { Option, OptionModel } from './Option';
 import { ResponseModel } from './Response';
+import { User } from './User';
 
 @post<Question>('remove', async (question) => {
   if (question) {
@@ -66,6 +67,10 @@ export class Question {
   @Field(() => [Option])
   @Property({ ref: () => Option, default: [] })
   options: Ref<Option>[];
+
+  @Field(() => User)
+  @Property({ ref: () => User, required: true })
+  user!: Ref<User>;
 }
 
 export const QuestionModel = getModelForClass(Question, {

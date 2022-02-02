@@ -1,6 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { Field, ObjectType } from 'type-graphql';
-import { getModelForClass, prop as Property } from '@typegoose/typegoose';
+import { getModelForClass, prop as Property, Ref } from '@typegoose/typegoose';
+import { User } from './User';
 
 @ObjectType()
 export class Option {
@@ -14,6 +15,10 @@ export class Option {
   @Field(() => String, { nullable: true })
   @Property({ default: '' })
   other?: string;
+
+  @Field(() => User)
+  @Property({ ref: () => User, required: true })
+  user!: Ref<User>;
 }
 
 export const OptionModel = getModelForClass(Option, {
