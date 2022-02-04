@@ -281,9 +281,9 @@ export type User = {
   role: Scalars['String'];
 };
 
-export type BaseOptionFragment = { __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined };
+export type BaseOptionFragment = { __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined, user: { __typename?: 'User', _id: string } };
 
-export type BaseQuestionFragment = { __typename?: 'Question', _id: string, fieldPlaceholder?: string | null | undefined, isField: boolean, isOption: boolean, title: string, options: Array<{ __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined }>, survey: { __typename?: 'Survey', _id: string } };
+export type BaseQuestionFragment = { __typename?: 'Question', _id: string, fieldPlaceholder?: string | null | undefined, isField: boolean, isOption: boolean, title: string, options: Array<{ __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined, user: { __typename?: 'User', _id: string } }>, survey: { __typename?: 'Survey', _id: string }, user: { __typename?: 'User', _id: string } };
 
 export type BaseSurveyFragment = { __typename?: 'Survey', _id: string, slug: string, title: string, description: string, status: string, creator: { __typename?: 'User', _id: string } };
 
@@ -293,14 +293,14 @@ export type CreateOptionMutationVariables = Exact<{
 }>;
 
 
-export type CreateOptionMutation = { __typename?: 'Mutation', createOption: { __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined } };
+export type CreateOptionMutation = { __typename?: 'Mutation', createOption: { __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined, user: { __typename?: 'User', _id: string } } };
 
 export type CreateQuestionMutationVariables = Exact<{
   data: QuestionInput;
 }>;
 
 
-export type CreateQuestionMutation = { __typename?: 'Mutation', createQuestion: { __typename?: 'Question', _id: string, fieldPlaceholder?: string | null | undefined, isField: boolean, isOption: boolean, title: string, options: Array<{ __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined }>, survey: { __typename?: 'Survey', _id: string } } };
+export type CreateQuestionMutation = { __typename?: 'Mutation', createQuestion: { __typename?: 'Question', _id: string, fieldPlaceholder?: string | null | undefined, isField: boolean, isOption: boolean, title: string, options: Array<{ __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined, user: { __typename?: 'User', _id: string } }>, survey: { __typename?: 'Survey', _id: string }, user: { __typename?: 'User', _id: string } } };
 
 export type CreateReportMutationVariables = Exact<{
   data: ReportInput;
@@ -314,7 +314,7 @@ export type CreateSurveyMutationVariables = Exact<{
 }>;
 
 
-export type CreateSurveyMutation = { __typename?: 'Mutation', createSurvey: { __typename?: 'Survey', _id: string, slug: string, title: string, description: string, status: string, questions: Array<{ __typename?: 'Question', _id: string, fieldPlaceholder?: string | null | undefined, isField: boolean, isOption: boolean, title: string, options: Array<{ __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined }>, survey: { __typename?: 'Survey', _id: string } }>, creator: { __typename?: 'User', _id: string } } };
+export type CreateSurveyMutation = { __typename?: 'Mutation', createSurvey: { __typename?: 'Survey', _id: string, slug: string, title: string, description: string, status: string, questions: Array<{ __typename?: 'Question', _id: string, fieldPlaceholder?: string | null | undefined, isField: boolean, isOption: boolean, title: string, options: Array<{ __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined, user: { __typename?: 'User', _id: string } }>, survey: { __typename?: 'Survey', _id: string }, user: { __typename?: 'User', _id: string } }>, creator: { __typename?: 'User', _id: string } } };
 
 export type DeleteMeMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -370,7 +370,7 @@ export type UpdateOptionMutationVariables = Exact<{
 }>;
 
 
-export type UpdateOptionMutation = { __typename?: 'Mutation', updateOption?: { __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined } | null | undefined };
+export type UpdateOptionMutation = { __typename?: 'Mutation', updateOption?: { __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined, user: { __typename?: 'User', _id: string } } | null | undefined };
 
 export type UpdateQuestionMutationVariables = Exact<{
   data: UpdateQuestionInput;
@@ -378,7 +378,7 @@ export type UpdateQuestionMutationVariables = Exact<{
 }>;
 
 
-export type UpdateQuestionMutation = { __typename?: 'Mutation', updateQuestion?: { __typename?: 'Question', _id: string, fieldPlaceholder?: string | null | undefined, isField: boolean, isOption: boolean, title: string, options: Array<{ __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined }>, survey: { __typename?: 'Survey', _id: string } } | null | undefined };
+export type UpdateQuestionMutation = { __typename?: 'Mutation', updateQuestion?: { __typename?: 'Question', _id: string, fieldPlaceholder?: string | null | undefined, isField: boolean, isOption: boolean, title: string, options: Array<{ __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined, user: { __typename?: 'User', _id: string } }>, survey: { __typename?: 'Survey', _id: string }, user: { __typename?: 'User', _id: string } } | null | undefined };
 
 export type UpdateSurveyStatusMutationVariables = Exact<{
   status: Scalars['String'];
@@ -393,12 +393,12 @@ export type GetSurveyBySlugQueryVariables = Exact<{
 }>;
 
 
-export type GetSurveyBySlugQuery = { __typename?: 'Query', getSurveyBySlug?: { __typename?: 'Survey', _id: string, slug: string, title: string, description: string, status: string, questions: Array<{ __typename?: 'Question', _id: string, fieldPlaceholder?: string | null | undefined, isField: boolean, isOption: boolean, title: string, options: Array<{ __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined }>, survey: { __typename?: 'Survey', _id: string } }>, creator: { __typename?: 'User', _id: string } } | null | undefined };
+export type GetSurveyBySlugQuery = { __typename?: 'Query', getSurveyBySlug?: { __typename?: 'Survey', _id: string, slug: string, title: string, description: string, status: string, questions: Array<{ __typename?: 'Question', _id: string, fieldPlaceholder?: string | null | undefined, isField: boolean, isOption: boolean, title: string, options: Array<{ __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined, user: { __typename?: 'User', _id: string } }>, survey: { __typename?: 'Survey', _id: string }, user: { __typename?: 'User', _id: string } }>, creator: { __typename?: 'User', _id: string } } | null | undefined };
 
 export type GetSurveysQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetSurveysQuery = { __typename?: 'Query', getSurveys: Array<{ __typename?: 'Survey', _id: string, slug: string, title: string, description: string, status: string, questions: Array<{ __typename?: 'Question', _id: string, fieldPlaceholder?: string | null | undefined, isField: boolean, isOption: boolean, title: string, options: Array<{ __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined }>, survey: { __typename?: 'Survey', _id: string } }>, creator: { __typename?: 'User', _id: string } }> };
+export type GetSurveysQuery = { __typename?: 'Query', getSurveys: Array<{ __typename?: 'Survey', _id: string, slug: string, title: string, description: string, status: string, questions: Array<{ __typename?: 'Question', _id: string, fieldPlaceholder?: string | null | undefined, isField: boolean, isOption: boolean, title: string, options: Array<{ __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined, user: { __typename?: 'User', _id: string } }>, survey: { __typename?: 'Survey', _id: string }, user: { __typename?: 'User', _id: string } }>, creator: { __typename?: 'User', _id: string } }> };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -410,6 +410,9 @@ export const BaseOptionFragmentDoc = gql`
   _id
   name
   other
+  user {
+    _id
+  }
 }
     `;
 export const BaseQuestionFragmentDoc = gql`
@@ -423,6 +426,9 @@ export const BaseQuestionFragmentDoc = gql`
     ...BaseOption
   }
   survey {
+    _id
+  }
+  user {
     _id
   }
 }

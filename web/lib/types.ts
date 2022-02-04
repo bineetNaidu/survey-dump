@@ -1,4 +1,4 @@
-import { Survey, Question } from './graphql';
+import { Survey, Question, Option, User } from './graphql';
 
 type CreatorType = Pick<Survey['creator'], '_id'>;
 
@@ -9,10 +9,20 @@ export type SelectedSurveyType = Pick<
   creator: CreatorType;
 };
 
-export type BaseQuestionType = Omit<Question, 'survey'> & {
+export type BaseOptionType = Omit<Option, 'user'> & {
+  user: {
+    _id: string;
+  };
+};
+
+export type BaseQuestionType = Omit<Question, 'survey' | 'user' | 'options'> & {
   survey: {
     _id: string;
   };
+  user: {
+    _id: string;
+  };
+  options: BaseOptionType[];
 };
 
 export type BaseSurveyType = Omit<Survey, 'questions' | 'creator'> & {
