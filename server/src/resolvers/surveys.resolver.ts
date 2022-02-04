@@ -19,12 +19,17 @@ import { isOwner } from '../middlewares/isOwner';
 export class SurveyResolver {
   @Query(() => Survey, { nullable: true })
   async getSurveyBySlug(@Arg('slug') slug: string) {
-    return await SurveyModel.findOne({ slug }).populate({
-      path: ['questions', 'creator'],
-      populate: {
-        path: 'options',
-      },
-    });
+    return await SurveyModel.findOne({ slug })
+      .populate({
+        path: 'questions',
+        populate: {
+          path: 'options',
+        },
+      })
+      .populate({
+        path: 'creator',
+        select: ['_id', 'email'],
+      });
   }
 
   @Query(() => [Survey])
@@ -33,12 +38,17 @@ export class SurveyResolver {
     const authUser = await getAuthUser(req);
     return await SurveyModel.find({
       creator: authUser!._id,
-    }).populate({
-      path: 'questions',
-      populate: {
-        path: 'options',
-      },
-    });
+    })
+      .populate({
+        path: 'questions',
+        populate: {
+          path: 'options',
+        },
+      })
+      .populate({
+        path: 'creator',
+        select: ['_id', 'email'],
+      });
   }
 
   @Mutation(() => Survey)
