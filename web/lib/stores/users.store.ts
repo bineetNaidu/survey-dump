@@ -3,7 +3,7 @@ import create, { StoreApi, UseBoundStore } from 'zustand';
 import createZustandContext from 'zustand/context';
 
 export type UserType = {
-  _id: string;
+  _id: any;
   email: string;
   avatar: string;
   name: string;
@@ -14,6 +14,7 @@ interface IUsersStore {
   isAuthenticated: boolean;
   logout: () => void;
   setUser: (user: UserType) => void;
+  updateUser: (user: UserType) => void;
 }
 
 type InitialStateType = Pick<IUsersStore, 'authUser' | 'isAuthenticated'>;
@@ -49,6 +50,14 @@ export const initializeStore: UserStoreType = (
         authUser: user,
         isAuthenticated: true,
       });
+    },
+    updateUser: (user) => {
+      set((state) => ({
+        ...state,
+        authUser: {
+          ...user,
+        },
+      }));
     },
   }));
 
