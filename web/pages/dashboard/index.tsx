@@ -1,36 +1,29 @@
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
-import { GetServerSideProps, NextPage } from 'next';
+import { NextPage } from 'next';
 import { SideNavbar } from '../../components/SideNavbar';
 import { withApollo } from '../../lib/nextApollo';
 import { useSurveyStore } from '../../lib/stores/survey.store';
-import { useUserStore, initializeStore } from '../../lib/stores/users.store';
+import { useUserStore } from '../../lib/stores/users.store';
 import { MultiStepModal } from '../../components/MultiStepModal';
-import { FaTrash } from 'react-icons/fa';
+import { IoMdSettings } from 'react-icons/io';
 import { FiExternalLink } from 'react-icons/fi';
-import { DeleteSurveyPromt } from '../../components/DeleteSurveyPromt';
-import { useToasts } from 'react-toast-notifications';
-import { useGetSurveysQuery, useDeleteSurveyMutation } from '../../lib/graphql';
+import { useGetSurveysQuery } from '../../lib/graphql';
 import { SurveyModal } from '../../components/SurveyModal';
 import type { BaseSurveyType } from '../../lib/types';
+import Link from 'next/link';
 
 const Dashboard: NextPage = () => {
   const {
     surveys,
     setSurveys,
-    removeSurvey,
     selectedSurvey,
     clearSelectedSurveyState,
     setSelectedSurveyState,
   } = useSurveyStore();
   const { authUser } = useUserStore();
-  const { addToast } = useToasts();
   const [show, setShow] = useState(false);
-  const [showDeleteSurveyPromt, setShowDeleteSurveyPromt] = useState(false);
-  const [deleteSurveyId, setDeleteSurveyId] = useState<null | string>(null);
   const [showSurveyModal, setShowSurveyModal] = useState(false);
-
-  const [deleteSurvey] = useDeleteSurveyMutation();
 
   const { data: surveyData } = useGetSurveysQuery();
 
@@ -39,42 +32,6 @@ const Dashboard: NextPage = () => {
       setSurveys(surveyData.getSurveys);
     }
   }, [surveyData, setSurveys]);
-
-  const handleDeleteSurvey = async () => {
-    try {
-      if (!deleteSurveyId) throw new Error('No survey id was provided');
-      const { data: deletedSurveyData } = await deleteSurvey({
-        variables: { deleteSurveyId },
-      });
-      if (!deletedSurveyData?.deleteSurvey) {
-        throw new Error('Survey could not be deleted');
-      }
-      removeSurvey(deleteSurveyId);
-      setDeleteSurveyId(null);
-      setShowDeleteSurveyPromt(false);
-      addToast('Survey deleted successfully', {
-        appearance: 'success',
-        autoDismiss: true,
-        id: 'delete-survey-success',
-      });
-    } catch (err) {
-      addToast('Error deleting survey', {
-        appearance: 'error',
-        autoDismiss: true,
-        id: 'delete-survey-error',
-      });
-    }
-  };
-
-  const handleCloseDeleteSurveyPromt = () => {
-    setDeleteSurveyId(null);
-    setShowDeleteSurveyPromt(false);
-  };
-
-  const handleShowDeleteSurveyPromt = (surveyId: string) => {
-    setDeleteSurveyId(surveyId);
-    setShowDeleteSurveyPromt(true);
-  };
 
   const handleShowSurveyModal = (s: BaseSurveyType) => {
     setSelectedSurveyState(
@@ -111,12 +68,6 @@ const Dashboard: NextPage = () => {
               />
             )}
             <MultiStepModal show={show} setShow={setShow} />
-            <DeleteSurveyPromt
-              handleCancel={handleCloseDeleteSurveyPromt}
-              handleDelete={handleDeleteSurvey}
-              show={showDeleteSurveyPromt}
-              setShow={setShowDeleteSurveyPromt}
-            />
           </>
         )}
         <div className="md:w-11/12 sm:w-full bg-gray-200 min-h-screen h-full transition-all">
@@ -178,19 +129,16 @@ const Dashboard: NextPage = () => {
                           </td>
                           <td className="p-2 whitespace-nowrap">
                             <div className="flex w-full justify-evenly items-center">
-                              <button
-                                className="h-8 w-8 text-sm text-blue-500 p-2 rounded border border-blue-500 hover:text-white hover:bg-red-500 hover:border-transparent transition-all"
-                                onClick={() =>
-                                  handleShowDeleteSurveyPromt(survey._id)
-                                }
-                              >
-                                <FaTrash />
-                              </button>
+                              <Link href={`/surveys/${survey.slug}`}>
+                                <a className="h-8 w-8 text-sm text-blue-500 p-2 rounded border border-blue-500 hover:text-white hover:bg-orange-500 hover:border-transparent transition-all">
+                                  <FiExternalLink />
+                                </a>
+                              </Link>
                               <button
                                 className="h-8 w-8 text-sm text-blue-500 p-2 rounded border border-blue-500 hover:text-white hover:bg-green-500 hover:border-transparent transition-all"
                                 onClick={() => handleShowSurveyModal(survey)}
                               >
-                                <FiExternalLink />
+                                <IoMdSettings />
                               </button>
                             </div>
                           </td>
@@ -227,21 +175,5 @@ const Dashboard: NextPage = () => {
     </>
   );
 };
-
-// export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-//   const userStore = initializeStore();
-//   const session = await getSession({ req });
-//   if (session?.user) {
-//     userStore.getState().setUser(session.user as any);
-//   }
-//
-//   return {
-//     props: {
-//       // the "stringify and then parse again" piece is required as next.js
-//       // isn't able to serialize it to JSON properly
-//       initialUserState: JSON.parse(JSON.stringify(userStore.getState())),
-//     },
-//   };
-// };
 
 export default withApollo({ ssr: true })(Dashboard);
