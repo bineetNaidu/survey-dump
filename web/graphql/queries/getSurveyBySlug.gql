@@ -1,6 +1,10 @@
 query GetSurveyBySlug($slug: String!) {
   getSurveyBySlug(slug: $slug) {
     ...BaseSurvey
+    creator {
+      _id
+      email
+    }
     questions {
       ...BaseQuestion
     }

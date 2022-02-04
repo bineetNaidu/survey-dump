@@ -393,7 +393,7 @@ export type GetSurveyBySlugQueryVariables = Exact<{
 }>;
 
 
-export type GetSurveyBySlugQuery = { __typename?: 'Query', getSurveyBySlug?: { __typename?: 'Survey', _id: string, slug: string, title: string, description: string, status: string, questions: Array<{ __typename?: 'Question', _id: string, fieldPlaceholder?: string | null | undefined, isField: boolean, isOption: boolean, title: string, options: Array<{ __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined, user: { __typename?: 'User', _id: string } }>, survey: { __typename?: 'Survey', _id: string }, user: { __typename?: 'User', _id: string } }>, creator: { __typename?: 'User', _id: string } } | null | undefined };
+export type GetSurveyBySlugQuery = { __typename?: 'Query', getSurveyBySlug?: { __typename?: 'Survey', _id: string, slug: string, title: string, description: string, status: string, creator: { __typename?: 'User', _id: string, email: string }, questions: Array<{ __typename?: 'Question', _id: string, fieldPlaceholder?: string | null | undefined, isField: boolean, isOption: boolean, title: string, options: Array<{ __typename?: 'Option', _id: string, name?: string | null | undefined, other?: string | null | undefined, user: { __typename?: 'User', _id: string } }>, survey: { __typename?: 'Survey', _id: string }, user: { __typename?: 'User', _id: string } }> } | null | undefined };
 
 export type GetSurveysQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -941,6 +941,10 @@ export const GetSurveyBySlugDocument = gql`
     query GetSurveyBySlug($slug: String!) {
   getSurveyBySlug(slug: $slug) {
     ...BaseSurvey
+    creator {
+      _id
+      email
+    }
     questions {
       ...BaseQuestion
     }
