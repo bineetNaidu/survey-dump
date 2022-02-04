@@ -9,7 +9,12 @@ import {
   UseMiddleware,
 } from 'type-graphql';
 import { User, UserModel } from '../models/User';
-import { AuthResponse, LoginInput, RegisterInput } from './dto/users.dto';
+import {
+  AuthResponse,
+  LoginInput,
+  RegisterInput,
+  UpdateUserInput,
+} from './dto/users.dto';
 import { CtxType } from '../types';
 import { getAuthUser } from '../utils';
 import { isAuthenticated } from '../middlewares/isAuthenticated';
@@ -102,5 +107,38 @@ export class UserResolver {
   @UseMiddleware(isAuthenticated)
   async me(@Ctx() { req }: CtxType): Promise<User | null> {
     return getAuthUser(req);
+  }
+
+  @Mutation(() => User)
+  @UseMiddleware(isAuthenticated)
+  async updateMe(
+    @Arg('data') data: UpdateUserInput,
+    @Ctx() { req }: CtxType
+  ): Promise<User> {
+    const authUser = await getAuthUser(req);
+    const user = await UserModel.findById(authUser!._id);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    if (data.name) {
+      user.name = data.name;
+    }
+    if (data.avatar) {
+      user.avatar = data.avatar;
+    }
+    await user.save();
+    return user;
+  }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuthenticated)
+  async deleteMe(@Ctx() { req }: CtxType): Promise<boolean> {
+    const authUser = await getAuthUser(req);
+    const user = await UserModel.findById(authUser!._id);
+    if (!user) {
+      return false;
+    }
+    await user.remove();
+    return true;
   }
 }
