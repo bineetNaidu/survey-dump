@@ -3,11 +3,13 @@ import { withApollo as createWithApollo } from 'next-apollo';
 import { setContext } from '@apollo/client/link/context';
 import Cookies from 'js-cookie';
 
-// const uri = process.env.GRAPHQL_ENDPOINT!;
-// console.log(uri);
+const uri =
+  process.env.NODE_ENV === 'production'
+    ? process.env.GRAPHQL_ENDPOINT!
+    : 'http://localhost:4000/graphql';
 
 const httpLink = createHttpLink({
-  uri: 'http://localhost:4000/graphql',
+  uri,
 });
 
 const token = Cookies.get('__survey_dump_auth_token__');
