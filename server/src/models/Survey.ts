@@ -67,11 +67,11 @@ export class Survey {
   status: SurveyStatus;
 
   @Field(() => User)
-  @Property({ required: true, ref: User })
+  @Property({ required: true, ref: 'User' })
   creator!: Ref<User>;
 
   @Field(() => [Question])
-  @Property({ ref: () => Question, default: [] })
+  @Property({ ref: 'Question', default: [] })
   questions: Ref<Question>[];
 }
 

@@ -65,11 +65,11 @@ export class Question {
   survey: Ref<Survey>;
 
   @Field(() => [Option])
-  @Property({ ref: () => Option, default: [] })
+  @Property({ ref: 'Option', default: [] })
   options: Ref<Option>[];
 
   @Field(() => User)
-  @Property({ ref: () => User, required: true })
+  @Property({ ref: 'User', required: true })
   user!: Ref<User>;
 }
 
