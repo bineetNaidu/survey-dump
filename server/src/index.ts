@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import mongoose from 'mongoose';
+import * as mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { createApolloServer } from './lib/createApolloServer';
 
