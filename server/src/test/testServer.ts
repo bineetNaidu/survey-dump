@@ -7,19 +7,10 @@
 
 */
 import 'reflect-metadata';
-import { ApolloServer } from 'apollo-server';
-import { buildSchema } from 'type-graphql';
-// import { HelloResolver } from '../resolvers/Hello';
-import path from 'path';
-import { createTestClient } from 'apollo-server-testing';
+import { createApolloServer } from '../lib/createApolloServer';
 
 export const testServer = async () => {
-  const server = new ApolloServer({
-    schema: await buildSchema({
-      validate: false,
-      resolvers: [path.join(__dirname, '../resolvers/**/*.ts')],
-    }),
-  });
+  const apolloServer = await createApolloServer();
 
-  return createTestClient(server);
+  return apolloServer.executeOperation;
 };

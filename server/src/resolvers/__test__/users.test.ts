@@ -8,25 +8,15 @@
 */
 
 import { gql } from 'apollo-server';
-import { ApolloServerTestClient } from 'apollo-server-testing';
 import { testServer } from '../../test/testServer';
 
-let server: ApolloServerTestClient;
-
-testServer()
-  .then((s) => {
-    return (server = s);
-  })
-  .catch((err) => {
-    console.error(err);
-  });
-
 it('should return a hello world message', async () => {
+  const server = await testServer();
   const query = gql`
     query {
-      hello
+      me
     }
   `;
-  const result = await server.query({ query });
-  expect(result.data).toEqual({ hello: 'Hello World 👋🌎' });
+  const result = await server({ query });
+  expect(result.data).toEqual({ me: null });
 });
