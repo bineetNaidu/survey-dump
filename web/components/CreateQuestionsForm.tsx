@@ -8,7 +8,8 @@ import {
 } from '../lib/graphql';
 import { useSurveyStore } from '../lib/stores/survey.store';
 
-interface IQuestion extends Omit<Question, '_id' | 'options' | 'survey'> {
+interface IQuestion
+  extends Omit<Question, '_id' | 'options' | 'survey' | 'user'> {
   options: QuestionOptionInput[];
 }
 

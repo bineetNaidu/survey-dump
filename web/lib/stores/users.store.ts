@@ -27,7 +27,7 @@ const initialState: InitialStateType = {
   isAuthenticated: false,
 };
 
-let store: ReturnType<UserStoreType> | undefined;
+let store: ReturnType<UserStoreType>;
 
 const zustandContext = createZustandContext<IUsersStore>();
 export const useUserStore = zustandContext.useStore;
@@ -77,7 +77,7 @@ export function useCreateUserStore(initialState: InitialStateType) {
   // is ignorable as this code runs in same order in a given environment
   /* eslint-disable-next-line react-hooks/rules-of-hooks */
   useLayoutEffect(() => {
-    if (initialState && store) {
+    if (initialState && !!store) {
       store.setState({
         ...store.getState(),
         ...initialState,

@@ -8,6 +8,8 @@ import type {
   SelectedSurveyType,
 } from '../types';
 
+type BaseOption = Omit<Option, 'user'> & { user: { _id: string } };
+
 interface ISurveyStore {
   surveys: BaseSurveyType[];
   selectedSurvey: SelectedSurveyType | null;
@@ -38,7 +40,7 @@ interface ISurveyStore {
     surveyId: string,
     qid: string,
     oid: string,
-    data: Partial<Option>
+    data: Partial<BaseOption>
   ) => void;
   removeQuestionOption: (
     surveyId: string,
@@ -61,7 +63,7 @@ const initialState: InitialStateType = {
   surveyQuestions: [],
 };
 
-let store: ReturnType<SurveyStoreType> | undefined;
+let store: ReturnType<SurveyStoreType>;
 
 const zustandContext = createZustandContext<ISurveyStore>();
 export const useSurveyStore = zustandContext.useStore;
@@ -237,7 +239,7 @@ export function useCreateSurveyStore(initialState: InitialStateType) {
   // is ignorable as this code runs in same order in a given environment
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useLayoutEffect(() => {
-    if (initialState && store) {
+    if (initialState && !!store) {
       store.setState({
         ...store.getState(),
         ...initialState,
