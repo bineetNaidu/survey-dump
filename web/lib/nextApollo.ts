@@ -3,10 +3,7 @@ import { withApollo as createWithApollo } from 'next-apollo';
 import { setContext } from '@apollo/client/link/context';
 import Cookies from 'js-cookie';
 
-const uri =
-  process.env.NODE_ENV === 'production'
-    ? process.env.GRAPHQL_ENDPOINT!
-    : 'http://localhost:4000/graphql';
+const uri = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT;
 
 const httpLink = createHttpLink({
   uri,
