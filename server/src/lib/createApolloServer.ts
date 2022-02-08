@@ -1,3 +1,4 @@
+import dotenv from 'dotenv';
 import { ApolloServer } from 'apollo-server';
 import { buildSchema } from 'type-graphql';
 import { OptionResolver } from '../resolvers/options.resolver';
@@ -6,6 +7,8 @@ import { ReportResolver } from '../resolvers/reports.resolver';
 import { ResponseResolver } from '../resolvers/responses.resolver';
 import { SurveyResolver } from '../resolvers/surveys.resolver';
 import { UserResolver } from '../resolvers/users.resolver';
+
+dotenv.config();
 
 const __prod__ = process.env.NODE_ENV === 'production';
 
@@ -29,7 +32,7 @@ export const createApolloServer = async () => {
     },
     context: ({ req, res }) => ({ req, res }),
     cors: {
-      origin: __prod__ ? process.env.NEXT_PUBLIC_URL : '*',
+      origin: __prod__ ? process.env.NEXT_PUBLIC_URL : 'http://localhost:3000',
       methods: 'POST',
       credentials: true,
     },
