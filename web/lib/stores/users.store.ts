@@ -70,7 +70,6 @@ export function useCreateUserStore(initialState: InitialStateType) {
   // For CSR, always re-use same store.
   store = store ?? initializeStore(initialState);
 
-  console.log(store);
   // And if initialState changes, then merge states in the next render cycle.
   //
   // eslint complaining "React Hooks must be called in the exact same order in every component render"
